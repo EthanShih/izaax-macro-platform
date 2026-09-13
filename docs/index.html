@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>愛榭克 (Izaax) 總體經濟即時監控中心 | 全球宏觀資產配置平台</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+    <!-- 靜態數據庫 -->
+    <script src="data.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: '#2563eb',
+                        brandDark: '#1e40af',
+                        cycleBoom: '#f59e0b',
+                        cycleRecession: '#ef4444',
+                        cycleRecovery: '#10b981',
+                        cycleGrowth: '#3b82f6'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        .tab-active { border-bottom: 3px solid #2563eb; color: #1d4ed8; font-weight: 700; }
+        .tab-inactive { color: #64748b; font-weight: 500; }
+        .card-shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.08); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen pb-16">
+
+    <!-- 頂部導航列 -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm backdrop-blur-md bg-white/95">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black text-white text-lg shadow-md shadow-blue-500/20">
+                    IZ
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">愛榭克 (Izaax) 總經監控中心</h1>
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-semibold">GitHub Pages Live</span>
+                    </div>
+                    <p class="text-xs text-slate-500 hidden sm:block">四階段景氣循環動態診斷與 FRED 23項核心指標即時分析</p>
+                </div>
+            </div>
+
+            <!-- 分頁切換鈕 -->
+            <div class="flex space-x-1 sm:space-x-4 border border-slate-200 rounded-lg p-1 bg-slate-100">
+                <button id="nav-btn-diagnosis" onclick="switchTab('diagnosis')" class="px-3 py-1.5 text-xs sm:text-sm rounded-md font-semibold transition-all bg-white text-blue-700 shadow-sm">
+                    🧭 總經診斷與最新數據
+                </button>
+                <button id="nav-btn-chart" onclick="switchTab('chart')" class="px-3 py-1.5 text-xs sm:text-sm rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all">
+                    📈 指標互動走勢圖
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要內容區 -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+
+        <!-- ==================== TAB 1: 總經診斷與最新數據 ==================== -->
+        <div id="tab-diagnosis" class="space-y-6">
+            
+            <!-- 景氣循環動態判定橫幅 -->
+            <div class="bg-white border-l-8 border-amber-500 rounded-xl p-5 sm:p-6 card-shadow border border-slate-200">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3 mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-amber-500 animate-ping"></span>
+                        <h2 class="text-lg sm:text-xl font-bold text-amber-900">
+                            📍 當前循環定位：榮景期尾聲 ➔ 降息過渡期 (Late Boom / Transition)
+                        </h2>
+                    </div>
+                    <span class="text-xs font-semibold px-2.5 py-1 bg-amber-50 text-amber-800 rounded-full border border-amber-200">
+                        愛榭克四階段模型實時判定
+                    </span>
+                </div>
+                <p class="text-sm sm:text-base text-slate-700 leading-relaxed">
+                    <strong>【核心依據】</strong> 美國長短公債殖利率利差（10Y-2Y 與 10Y-3M）已正式結束長達兩年的深度倒掛，全面翻正為正斜率。在愛榭克分析體系中，<strong>「解除倒掛」是繁榮期邁向後續轉折的關鍵里程碑</strong>。與此同時，每週高頻指標<strong>「初領失業金」維持在 20.6 萬人健康低檔</strong>，失業率 4.1% 溫和，顯示實體經濟底氣猶存，經濟並未爆發懸崖式衰退，升息週期已正式邁向預防性降息窗口。
+                </p>
+            </div>
+
+            <!-- 4 個即時核心體質卡片 -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
+                    <p class="text-xs font-medium text-slate-500">勞動就業市場 (失業率)</p>
+                    <div class="flex items-baseline gap-2 mt-1">
+                        <span class="text-2xl sm:text-3xl font-bold text-slate-900" id="card-unrate">4.1%</span>
+                        <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">健康韌性</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">初領救濟金 206K (低於250K警戒)</p>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
+                    <p class="text-xs font-medium text-slate-500">通膨降溫進度 (CPI YoY)</p>
+                    <div class="flex items-baseline gap-2 mt-1">
+                        <span class="text-2xl sm:text-3xl font-bold text-slate-900" id="card-cpi">3.35%</span>
+                        <span class="text-xs font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">受控降溫</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">核心 PCE 穩定趨向 2.6%~2.8%</p>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
+                    <p class="text-xs font-medium text-slate-500">殖利率利差 (10Y-2Y)</p>
+                    <div class="flex items-baseline gap-2 mt-1">
+                        <span class="text-2xl sm:text-3xl font-bold text-emerald-600" id="card-t10y2y">+0.33%</span>
+                        <span class="text-xs font-medium text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded font-bold">已解倒掛</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">10Y-3M 同步回升至 +0.89%</p>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
+                    <p class="text-xs font-medium text-slate-500">消費動能 (零售銷售 YoY)</p>
+                    <div class="flex items-baseline gap-2 mt-1">
+                        <span class="text-2xl sm:text-3xl font-bold text-slate-900" id="card-rsxfs">+3.2%</span>
+                        <span class="text-xs font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">邊際分化</span>
+                    </div>
+                    <p class="text-xs text-slate-500 mt-2">密大信心 55.2 (仍受物價壓制)</p>
+                </div>
+            </div>
+
+            <!-- 總經深度診斷與風險建議區塊 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- 左欄：宏觀現況深度剖析 -->
+                <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-4">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <span>🔍</span> 愛榭克當前總體經濟深度剖析
+                    </h3>
+                    
+                    <div class="space-y-3 text-sm text-slate-700 leading-relaxed">
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <h4 class="font-bold text-slate-900 mb-1">1. 就業市場：供需平衡邁入常態，失業防線穩固</h4>
+                            <p>美國非農新增人數雖從先前過熱節奏放緩，但<strong>初領失業金 (ICSA)</strong> 僅 20.6 萬人，持續低於 25 萬人的警戒閥值，更遠在 30 萬人的實質衰退線之下。企業端並未引發全面性的解僱潮，工資與通膨螺旋上升的壓力已徹底化解。</p>
+                        </div>
+
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <h4 class="font-bold text-slate-900 mb-1">2. 通膨與利率：限制性利率功成身退，降息空間充裕</h4>
+                            <p><strong>CPI 年增率收斂至約 3.35%</strong>，核心 PCE 保持溫和走勢。聯邦基金有效利率（約 3.6%~5.25%）遠高於中性利率，賦予聯準會極大的貨幣防禦空間，後續進入「預防性降息」節奏將為經濟帶來充沛流動性防護網。</p>
+                        </div>
+
+                        <div class="p-3 bg-slate-50 rounded-lg border border-slate-100">
+                            <h4 class="font-bold text-slate-900 mb-1">3. 殖利率解倒掛：由熊市變平轉向牛市陡峭</h4>
+                            <p>長短利差結束倒掛翻正為正值，標誌著景氣循環從「極度緊縮的榮景抗通膨期」邁向「再平衡期」。在愛榭克體系中，此時需特別留心降息啟動後的滯後經濟回饋。</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右欄：核心風險提示與投資配置建議 -->
+                <div class="space-y-6">
+                    <!-- 風險提示 -->
+                    <div class="bg-amber-50/70 border border-amber-200 p-5 rounded-xl card-shadow">
+                        <h3 class="text-base font-bold text-amber-900 flex items-center gap-2 mb-2">
+                            <span>⚠️</span> 核心風險提示 (Risk Warning)
+                        </h3>
+                        <ul class="text-xs sm:text-sm text-amber-950 space-y-2 list-disc list-inside leading-relaxed">
+                            <li><strong>解除倒掛後的滯後衰退陷阱</strong>：歷史經驗表明，經濟下行通常不在倒掛期間，而在倒掛解除後 6~18 個月內驗證。若初領失業金急升至 25 萬以上，需提高警覺。</li>
+                            <li><strong>長天期利率高懸 (10Y 殖利率接近 4.95%)</strong>：無風險基準利率居高不下，房貸利率緊繃壓抑房市開工與成屋交易，並制約股票估值倍數。</li>
+                            <li><strong>低收入群體消費邊際放緩</strong>：密大消費者信心指數 (55.2) 低迷，需關注終端零售是否因超額儲蓄見底而走弱。</li>
+                        </ul>
+                    </div>
+
+                    <!-- 投資策略與配置建議 -->
+                    <div class="bg-blue-50/70 border border-blue-200 p-5 rounded-xl card-shadow">
+                        <h3 class="text-base font-bold text-blue-900 flex items-center gap-2 mb-2">
+                            <span>💡</span> 愛榭克資產配置與投資策略建議
+                        </h3>
+                        <div class="space-y-2 text-xs sm:text-sm text-blue-950 leading-relaxed">
+                            <div class="flex items-center gap-2 font-bold text-blue-800">
+                                <span>🛡️ 建議資產比例：股票 60% ｜ 長天期美債 35% ｜ 現金 5%</span>
+                            </div>
+                            <p><strong>• 債券端策略</strong>：降息週期開展，目前處於鎖定近 5% 高無風險殖利率與賺取資本利得的最佳歷史視窗，長天期美債為核心防守重兵。</p>
+                            <p><strong>• 股票端策略</strong>：揚棄高槓桿、無獲利的投機題材，重兵佈局具備<strong>強大現金流定價能力之大型科技巨擘</strong>，並逢低增持<strong>受惠降息週期之高股息、公用事業與內需消費族群</strong>。</p>
+                            <p><strong>• 風控關鍵底線</strong>：每週四以<strong>「初領失業救濟金人數 25 萬」</strong>作為股票部位全面調降槓桿之第一道停損閘門。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 全部 23 項指標最新數據總覽表 -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">📑 全部 23 項總經指標最新數值總覽</h3>
+                        <p class="text-xs text-slate-500">來源：美聯儲 FRED 官方時序數據庫 (每日自動同步)</p>
+                    </div>
+                    <!-- 分類篩選標籤按鈕 -->
+                    <div class="flex flex-wrap gap-1.5" id="category-filter-buttons">
+                        <button onclick="filterCategory('全部')" class="cat-btn px-2.5 py-1 text-xs rounded-full font-semibold bg-blue-600 text-white">全部</button>
+                        <button onclick="filterCategory('就業市場')" class="cat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">就業市場</button>
+                        <button onclick="filterCategory('通膨與物價')" class="cat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">通膨與物價</button>
+                        <button onclick="filterCategory('消費與信心')" class="cat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">消費與信心</button>
+                        <button onclick="filterCategory('製造與景氣')" class="cat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">製造與景氣</button>
+                        <button onclick="filterCategory('房地產市場')" class="cat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">房地產市場</button>
+                        <button onclick="filterCategory('貨幣與利率')" class="cat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">貨幣與利率</button>
+                    </div>
+                </div>
+
+                <!-- 數據表格 -->
+                <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-100 text-slate-700 text-xs uppercase font-semibold">
+                            <tr>
+                                <th class="py-3 px-4">分類</th>
+                                <th class="py-3 px-4">指標名稱</th>
+                                <th class="py-3 px-4">代碼</th>
+                                <th class="py-3 px-4">最新發布日期</th>
+                                <th class="py-3 px-4 text-right">最新數值 (單位)</th>
+                                <th class="py-3 px-4 text-right">前期變動 (MoM/QoQ)</th>
+                                <th class="py-3 px-4 text-right">年增率 / 差值 (YoY)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="summary-table-body" class="divide-y divide-slate-200">
+                            <!-- 由 JS 動態注入 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ==================== TAB 2: 指標互動走勢圖 ==================== -->
+        <div id="tab-chart" class="space-y-6 hidden">
+            
+            <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-6">
+                <!-- 控制控制列 -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pb-4 border-b border-slate-200">
+                    <!-- 主指標選單 -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">📌 選擇主要走勢指標 (加粗左軸)</label>
+                        <select id="main-indicator-select" onchange="renderPlotlyChart()" class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 font-medium">
+                            <!-- 由 JS 動態注入 -->
+                        </select>
+                    </div>
+
+                    <!-- 呈現格式 -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">📐 Y 軸呈現格式</label>
+                        <select id="format-select" onchange="renderPlotlyChart()" class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5 font-medium">
+                            <option value="raw" selected>原始數據 (Raw Data)</option>
+                            <option value="index">指數基期 = 100 (Indexed)</option>
+                            <option value="yoy">YoY 年成長率 / 百分點差值</option>
+                            <option value="mom">MoM 月成長率 / 百分點差值</option>
+                        </select>
+                    </div>
+
+                    <!-- 時間範圍按鈕 -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">📅 時間篩選區間</label>
+                        <div class="flex gap-1">
+                            <button onclick="setTimeRange(1)" class="time-btn px-2.5 py-2 text-xs font-semibold rounded bg-slate-100 text-slate-700 hover:bg-slate-200">近1年</button>
+                            <button onclick="setTimeRange(3)" class="time-btn px-2.5 py-2 text-xs font-semibold rounded bg-slate-100 text-slate-700 hover:bg-slate-200">近3年</button>
+                            <button onclick="setTimeRange(5)" class="time-btn px-2.5 py-2 text-xs font-semibold rounded bg-blue-600 text-white">近5年</button>
+                            <button onclick="setTimeRange(10)" class="time-btn px-2.5 py-2 text-xs font-semibold rounded bg-slate-100 text-slate-700 hover:bg-slate-200">近10年</button>
+                            <button onclick="setTimeRange(0)" class="time-btn px-2.5 py-2 text-xs font-semibold rounded bg-slate-100 text-slate-700 hover:bg-slate-200">全部</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 比較指標多選區 (標籤點擊) -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">📊 疊加比較指標 (虛線右軸，可多選)</label>
+                    <div id="compare-checkbox-container" class="flex flex-wrap gap-2 max-h-36 overflow-y-auto p-2 bg-slate-50 rounded-lg border border-slate-200">
+                        <!-- 由 JS 動態注入 -->
+                    </div>
+                </div>
+
+                <!-- Plotly 圖表繪製區 -->
+                <div id="plotly-chart" style="width:100%; height:520px;"></div>
+            </div>
+
+            <!-- 發布行事曆 -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow">
+                <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+                    <span>📅</span> 重要總經數據發布日程規律表
+                </h3>
+                <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-100 text-slate-700 text-xs uppercase font-semibold">
+                            <tr>
+                                <th class="py-2.5 px-4">定期發布日程</th>
+                                <th class="py-2.5 px-4">發布機構</th>
+                                <th class="py-2.5 px-4">關鍵指標</th>
+                                <th class="py-2.5 px-4">循環觀察重點</th>
+                                <th class="py-2.5 px-4 text-center">重要性</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 text-xs sm:text-sm">
+                            <tr>
+                                <td class="py-2.5 px-4 font-semibold text-slate-900">每月第 1 個營業日</td>
+                                <td class="py-2.5 px-4">供應管理協會 (ISM)</td>
+                                <td class="py-2.5 px-4 font-medium">ISM 製造業採購經理人指數 (PMI)</td>
+                                <td class="py-2.5 px-4 text-slate-600">50 榮枯線區分收縮與擴張</td>
+                                <td class="py-2.5 px-4 text-center text-amber-500 font-bold">⭐⭐⭐⭐⭐</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-semibold text-slate-900">每月第 1 個星期五</td>
+                                <td class="py-2.5 px-4">勞工統計局 (BLS)</td>
+                                <td class="py-2.5 px-4 font-medium">非農就業人口 (NFP) & 失業率</td>
+                                <td class="py-2.5 px-4 text-slate-600">勞動市場是否過熱或惡化</td>
+                                <td class="py-2.5 px-4 text-center text-amber-500 font-bold">⭐⭐⭐⭐⭐</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-semibold text-slate-900">每週四 (高頻公佈前週)</td>
+                                <td class="py-2.5 px-4">勞工部 (DOL)</td>
+                                <td class="py-2.5 px-4 font-medium">初次請領失業救濟金 (ICSA)</td>
+                                <td class="py-2.5 px-4 text-slate-600">25 萬人為風控警戒線</td>
+                                <td class="py-2.5 px-4 text-center text-amber-500 font-bold">⭐⭐⭐⭐⭐</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-semibold text-slate-900">每月中旬 (約 10~15 日)</td>
+                                <td class="py-2.5 px-4">勞工統計局 (BLS)</td>
+                                <td class="py-2.5 px-4 font-medium">消費者物價指數 (CPI) & PPI</td>
+                                <td class="py-2.5 px-4 text-slate-600">評估通膨降溫節奏</td>
+                                <td class="py-2.5 px-4 text-center text-amber-500 font-bold">⭐⭐⭐⭐⭐</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-semibold text-slate-900">每月中旬 (約 13~15 日)</td>
+                                <td class="py-2.5 px-4">美國普查局 (Census)</td>
+                                <td class="py-2.5 px-4 font-medium">零售銷售數據 (Retail Sales)</td>
+                                <td class="py-2.5 px-4 text-slate-600">終端民間消費實力</td>
+                                <td class="py-2.5 px-4 text-center text-amber-500 font-bold">⭐⭐⭐⭐</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-semibold text-slate-900">每個月底 (約 26~30 日)</td>
+                                <td class="py-2.5 px-4">經濟分析局 (BEA)</td>
+                                <td class="py-2.5 px-4 font-medium">個人消費支出 (PCE) & 核心 PCE</td>
+                                <td class="py-2.5 px-4 text-slate-600">聯準會 2% 通膨錨定首選目標</td>
+                                <td class="py-2.5 px-4 text-center text-amber-500 font-bold">⭐⭐⭐⭐⭐</td>
+                            </tr>
+                            <tr>
+                                <td class="py-2.5 px-4 font-semibold text-slate-900">每年 8 次 (約每 6 週)</td>
+                                <td class="py-2.5 px-4">聯邦準備理事會 (Fed)</td>
+                                <td class="py-2.5 px-4 font-medium">FOMC 利率決策會議 & 經濟預測</td>
+                                <td class="py-2.5 px-4 text-slate-600">點陣圖與中性利率引導</td>
+                                <td class="py-2.5 px-4 text-center text-amber-500 font-bold">⭐⭐⭐⭐⭐</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- JavaScript 互動程式碼 -->
+    <script>
+        let currentYearsFilter = 5;
+        let selectedCompareCodes = ['UNRATE']; // 預設疊加比較指標
+
+        function switchTab(tab) {
+            const diagTab = document.getElementById('tab-diagnosis');
+            const chartTab = document.getElementById('tab-chart');
+            const diagBtn = document.getElementById('nav-btn-diagnosis');
+            const chartBtn = document.getElementById('nav-btn-chart');
+
+            if (tab === 'diagnosis') {
+                diagTab.classList.remove('hidden');
+                chartTab.classList.add('hidden');
+                diagBtn.className = "px-3 py-1.5 text-xs sm:text-sm rounded-md font-semibold transition-all bg-white text-blue-700 shadow-sm";
+                chartBtn.className = "px-3 py-1.5 text-xs sm:text-sm rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all";
+            } else {
+                diagTab.classList.add('hidden');
+                chartTab.classList.remove('hidden');
+                chartBtn.className = "px-3 py-1.5 text-xs sm:text-sm rounded-md font-semibold transition-all bg-white text-blue-700 shadow-sm";
+                diagBtn.className = "px-3 py-1.5 text-xs sm:text-sm rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all";
+                renderPlotlyChart();
+            }
+        }
+
+        // 渲染總覽數據表
+        function renderSummaryTable(category = '全部') {
+            const tbody = document.getElementById('summary-table-body');
+            tbody.innerHTML = '';
+
+            const filtered = category === '全部' ? LATEST_SUMMARY : LATEST_SUMMARY.filter(x => x.category === category);
+
+            filtered.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors";
+
+                const valDisplay = item.value >= 1000 ? item.value.toLocaleString() : item.value.toFixed(2);
+                
+                let momDisplay = '-';
+                if (item.mom !== null) {
+                    const momVal = item.mom > 0 ? `+${item.mom}` : `${item.mom}`;
+                    const momColor = item.mom > 0 ? 'text-emerald-600' : (item.mom < 0 ? 'text-rose-600' : 'text-slate-500');
+                    momDisplay = `<span class="${momColor} font-semibold">${momVal} ${item.is_rate ? '百分點' : '%'}</span>`;
+                }
+
+                let yoyDisplay = '-';
+                if (item.yoy !== null) {
+                    const yoyVal = item.yoy > 0 ? `+${item.yoy}` : `${item.yoy}`;
+                    const yoyColor = item.yoy > 0 ? 'text-emerald-600' : (item.yoy < 0 ? 'text-rose-600' : 'text-slate-500');
+                    yoyDisplay = `<span class="${yoyColor} font-semibold">${yoyVal} ${item.is_rate ? '百分點' : '%'}</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-xs font-semibold text-slate-500"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">${item.category}</span></td>
+                    <td class="py-3 px-4 font-bold text-slate-900">${item.name}</td>
+                    <td class="py-3 px-4 text-xs font-mono text-slate-500">${item.code}</td>
+                    <td class="py-3 px-4 text-slate-600 text-xs">${item.latest_date}</td>
+                    <td class="py-3 px-4 text-right font-bold text-slate-900">${valDisplay} <span class="text-xs text-slate-400 font-normal">(${item.unit})</span></td>
+                    <td class="py-3 px-4 text-right text-xs">${momDisplay}</td>
+                    <td class="py-3 px-4 text-right text-xs">${yoyDisplay}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterCategory(cat) {
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if (btn.innerText === cat) {
+                    btn.className = "cat-btn px-2.5 py-1 text-xs rounded-full font-semibold bg-blue-600 text-white";
+                } else {
+                    btn.className = "cat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200";
+                }
+            });
+            renderSummaryTable(cat);
+        }
+
+        // 初始化圖表選單
+        function initChartControls() {
+            const mainSelect = document.getElementById('main-indicator-select');
+            const compareContainer = document.getElementById('compare-checkbox-container');
+            mainSelect.innerHTML = '';
+            compareContainer.innerHTML = '';
+
+            const codes = Object.keys(MACRO_DATA);
+
+            codes.forEach(code => {
+                const info = MACRO_DATA[code];
+                
+                // 主指標選項
+                const opt = document.createElement('option');
+                opt.value = code;
+                opt.innerText = `${info.name} (${code})`;
+                if (code === 'T10Y2Y') opt.selected = true; // 預設主指標：10Y-2Y利差
+                mainSelect.appendChild(opt);
+
+                // 比較指標標籤 (多選)
+                const label = document.createElement('label');
+                label.className = "inline-flex items-center gap-1.5 px-2.5 py-1 rounded border border-slate-200 bg-white text-xs cursor-pointer hover:bg-blue-50 transition-colors";
+                
+                const cb = document.createElement('input');
+                cb.type = "checkbox";
+                cb.value = code;
+                cb.className = "rounded text-blue-600 focus:ring-blue-500 compare-cb";
+                cb.checked = selectedCompareCodes.includes(code);
+                cb.onchange = () => {
+                    selectedCompareCodes = Array.from(document.querySelectorAll('.compare-cb:checked')).map(c => c.value);
+                    renderPlotlyChart();
+                };
+
+                label.appendChild(cb);
+                label.appendChild(document.createTextNode(info.name));
+                compareContainer.appendChild(label);
+            });
+        }
+
+        function setTimeRange(years) {
+            currentYearsFilter = years;
+            document.querySelectorAll('.time-btn').forEach(b => {
+                if ((years === 1 && b.innerText === '近1年') ||
+                    (years === 3 && b.innerText === '近3年') ||
+                    (years === 5 && b.innerText === '近5年') ||
+                    (years === 10 && b.innerText === '近10年') ||
+                    (years === 0 && b.innerText === '全部')) {
+                    b.className = "time-btn px-2.5 py-2 text-xs font-semibold rounded bg-blue-600 text-white";
+                } else {
+                    b.className = "time-btn px-2.5 py-2 text-xs font-semibold rounded bg-slate-100 text-slate-700 hover:bg-slate-200";
+                }
+            });
+            renderPlotlyChart();
+        }
+
+        // 計算並對齊時間序列數據
+        function transformData(code, format, minDateStr) {
+            const item = MACRO_DATA[code];
+            if (!item) return { x: [], y: [] };
+
+            let dates = item.dates;
+            let values = item.values;
+
+            // 依據格式計算
+            let outX = [];
+            let outY = [];
+
+            if (format === 'raw') {
+                for (let i = 0; i < dates.length; i++) {
+                    if (!minDateStr || dates[i] >= minDateStr) {
+                        outX.push(dates[i]);
+                        outY.push(values[i]);
+                    }
+                }
+            } else if (format === 'index') {
+                let firstVal = null;
+                for (let i = 0; i < dates.length; i++) {
+                    if (!minDateStr || dates[i] >= minDateStr) {
+                        if (firstVal === null && values[i] !== 0) firstVal = values[i];
+                        outX.push(dates[i]);
+                        outY.push(firstVal ? (values[i] / firstVal) * 100 : 100);
+                    }
+                }
+            } else if (format === 'yoy') {
+                // 精準向前尋找 1 年前對應值
+                for (let i = 0; i < dates.length; i++) {
+                    if (!minDateStr || dates[i] >= minDateStr) {
+                        const curD = new Date(dates[i]);
+                        const targetD = new Date(curD);
+                        targetD.setFullYear(curD.getFullYear() - 1);
+                        const targetStr = targetD.toISOString().split('T')[0];
+
+                        // 往前二分或向後搜尋最近有效歷史
+                        let pastVal = null;
+                        for (let j = i - 1; j >= 0; j--) {
+                            if (dates[j] <= targetStr) {
+                                pastVal = values[j];
+                                break;
+                            }
+                        }
+
+                        if (pastVal !== null) {
+                            outX.push(dates[i]);
+                            if (item.is_rate) {
+                                outY.push(Number((values[i] - pastVal).toFixed(3)));
+                            } else {
+                                outY.push(pastVal !== 0 ? Number((((values[i] / pastVal) - 1) * 100).toFixed(2)) : 0);
+                            }
+                        }
+                    }
+                }
+            } else if (format === 'mom') {
+                for (let i = 1; i < dates.length; i++) {
+                    if (!minDateStr || dates[i] >= minDateStr) {
+                        outX.push(dates[i]);
+                        if (item.is_rate) {
+                            outY.push(Number((values[i] - values[i-1]).toFixed(3)));
+                        } else {
+                            outY.push(values[i-1] !== 0 ? Number((((values[i] / values[i-1]) - 1) * 100).toFixed(2)) : 0);
+                        }
+                    }
+                }
+            }
+
+            return { x: outX, y: outY, name: item.name, is_rate: item.is_rate, unit: item.unit };
+        }
+
+        function renderPlotlyChart() {
+            const mainCode = document.getElementById('main-indicator-select').value;
+            const format = document.getElementById('format-select').value;
+
+            // 計算篩選日期
+            let minDateStr = null;
+            if (currentYearsFilter > 0) {
+                const now = new Date();
+                now.setFullYear(now.getFullYear() - currentYearsFilter);
+                minDateStr = now.toISOString().split('T')[0];
+            }
+
+            const mainTrans = transformData(mainCode, format, minDateStr);
+
+            const traces = [];
+
+            // 主指標 Trace (左軸)
+            traces.push({
+                x: mainTrans.x,
+                y: mainTrans.y,
+                name: `⭐ ${mainTrans.name} (主指標)`,
+                type: 'scatter',
+                mode: 'lines',
+                line: { width: 3, color: '#1d4ed8' },
+                connectgaps: true
+            });
+
+            // 比較指標 Traces (右軸)
+            const colors = ['#f59e0b', '#10b981', '#ef4444', '#8b5cf6', '#06b6d4'];
+            let colorIdx = 0;
+
+            selectedCompareCodes.forEach(cmpCode => {
+                if (cmpCode !== mainCode) {
+                    const cmpTrans = transformData(cmpCode, format, minDateStr);
+                    traces.push({
+                        x: cmpTrans.x,
+                        y: cmpTrans.y,
+                        name: `${cmpTrans.name} (副)`,
+                        yaxis: 'y2',
+                        type: 'scatter',
+                        mode: 'lines',
+                        line: { width: 2, dash: 'dash', color: colors[colorIdx % colors.length] },
+                        connectgaps: true
+                    });
+                    colorIdx++;
+                }
+            });
+
+            let yTitle = "原始數值";
+            if (format === 'index') yTitle = "指數 (基期=100)";
+            if (format === 'yoy') yTitle = "YoY 年增率 (%) / 百分點差值";
+            if (format === 'mom') yTitle = "MoM 月增率 (%) / 百分點差值";
+
+            const layout = {
+                hovermode: 'x unified',
+                margin: { l: 50, r: 50, t: 20, b: 40 },
+                legend: { orientation: 'h', y: 1.08, x: 0.5, xanchor: 'center' },
+                xaxis: { showgrid: true, gridcolor: '#f1f5f9' },
+                yaxis: { title: yTitle, showgrid: true, gridcolor: '#f1f5f9' },
+                yaxis2: selectedCompareCodes.length > 0 ? {
+                    title: '比較指標數值',
+                    overlaying: 'y',
+                    side: 'right',
+                    showgrid: false
+                } : undefined,
+                font: { family: 'inherit' }
+            };
+
+            Plotly.newPlot('plotly-chart', traces, layout, { responsive: true, displaylogo: false });
+        }
+
+        // 頁面初始化
+        window.onload = () => {
+            renderSummaryTable('全部');
+            initChartControls();
+        };
+    </script>
+</body>
+</html>
