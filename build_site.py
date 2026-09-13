@@ -3,7 +3,7 @@ import pandas as pd
 import json
 import os
 
-BASE_DIR = r"C:\AntiGravity\izaax-macro-platform"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DOCS_DIR = os.path.join(BASE_DIR, "docs")
 os.makedirs(DOCS_DIR, exist_ok=True)
 

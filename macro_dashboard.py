@@ -6,7 +6,7 @@ from plotly.subplots import make_subplots
 import os
 
 # 設定頁面
-st.set_page_config(page_title="愛榭克 (Izaax) 總經分析與監控平台", layout="wide", page_icon="📈")
+st.set_page_config(page_title="總經分析模組", layout="wide", page_icon="📈")
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "macro_data.db")
@@ -245,7 +245,7 @@ def render_chart_page(df):
 
 # ----------------- 頁面 2: 最新數據與總經診斷 -----------------
 def render_diagnosis_page(df):
-    st.header("📋 全部指標最新數據與愛榭克總經診斷")
+    st.header("📋 全部指標最新數據與總經診斷")
     
     stats_df = calculate_summary_stats(df)
     if stats_df.empty:
@@ -272,9 +272,9 @@ def render_diagnosis_page(df):
     umcsent = get_val('UMCSENT')
 
     # ========== 1. 景氣循環頂部診斷儀表 ==========
-    st.subheader("🧭 愛榭克景氣循環動態判定")
+    st.subheader("🧭 總經分析模組景氣循環動態判定")
     
-    # 根據愛榭克框架邏輯判定目前階段：
+    # 根據模組框架邏輯判定目前階段：
     # 倒掛解除 (T10Y2Y > 0) 且 初領失業金仍在低檔 (<25萬) -> 榮景期尾聲 / 景氣轉換期 (Late Boom / Transition)
     if t10y2y is not None and t10y2y > 0 and icsa is not None and icsa < 250000 and unrate <= 4.5:
         current_cycle = "榮景期尾聲 ➔ 成長再平衡 / 降息過渡期 (Late Boom / Transition)"
@@ -342,10 +342,10 @@ def render_diagnosis_page(df):
     with diag_col1:
         st.subheader("🔍 當前總體經濟全面剖析")
         st.markdown("""
-        根據愛榭克的總經分析架構，檢視當前各維度數據：
+        根據總經分析模組架構，檢視當前各維度數據：
         
         1. **就業市場：穩健中帶有降溫，未見衰退失控跡象**
-           - **初領失業金 (ICSA)** 最新讀數維持在約 **20.6 萬人** 的低檔健康區間（愛榭克警戒線為 25 萬，衰退臨界線為 30 萬），顯示企業端並未爆發系統性解雇潮。
+           - **初領失業金 (ICSA)** 最新讀數維持在約 **20.6 萬人** 的低檔健康區間（模組警戒線為 25 萬，衰退臨界線為 30 萬），顯示企業端並未爆發系統性解雇潮。
            - **失業率 (UNRATE)** 處於 **4.1%** 左右，相較歷史低點略為墊高，但仍屬自然失業率健康範圍，勞動市場呈現「供需缺口收斂、就業成長放緩但未崩壞」的軟著陸特徵。
         
         2. **通膨與貨幣政策：通膨受控降溫，聯準會迎來降息視窗**
@@ -354,7 +354,7 @@ def render_diagnosis_page(df):
            
         3. **殖利率曲線解倒掛：關鍵歷史信號觸發**
            - **10年減2年公債利差 (T10Y2Y)** 與 **10年減3個月利差 (T10Y3M)** 已翻正回升至正值 (+0.33% 與 +0.89%)。
-           - 在愛榭克框架中，**「殖利率曲線解除倒掛」是循環轉換的關鍵標誌**。倒掛期間股市通常仍有最後多頭，但解除倒掛後 6~18 個月內，將真正檢驗實體經濟能否經受高利率滯後效應的衝擊。
+           - 在總經分析模組中，**「殖利率曲線解除倒掛」是循環轉換的關鍵標誌**。倒掛期間股市通常仍有最後多頭，但解除倒掛後 6~18 個月內，將真正檢驗實體經濟能否經受高利率滯後效應的衝擊。
         """)
 
     with diag_col2:
@@ -368,7 +368,7 @@ def render_diagnosis_page(df):
           10年期公債殖利率 (DGS10) 接近 4.95%，高無風險利率對高估值成長股形成評價 (PE) 壓制。
         """)
         
-        st.subheader("💡 愛榭克投資策略與資產配置建議")
+        st.subheader("💡 投資策略與資產配置建議")
         st.info("""
         - 🛡️ **股債雙核心平衡配置 (建議股 60% : 債 35% : 現金 5%)**：
           當前正處於「升息終結、降息開跑」的降息循環初期，此階段**長天期公債（如 10Y/20Y 美債）具備高度資本利得與鎖定高殖利率優勢**。

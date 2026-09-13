@@ -1,13 +1,13 @@
-# 愛榭克 (Izaax) 總體經濟分析框架與即時監控平台
-*(Izaax Macroeconomic Analysis Framework, Automated FRED Data Pipeline & Interactive Dashboard)*
+# 總經分析模組
+*(Macroeconomic Analysis Framework, Automated FRED Data Pipeline & Interactive Dashboard)*
 
-本專案依據知名財經作家**愛榭克 (Izaax)** 的經典總經分析框架（景氣循環四階段：復甦期、成長期、榮景期、衰退期），建構了完整的數據自動化下載、本地時序資料庫維護、以及 Streamlit 互動視覺化儀表板。
+本專案依據經典總經分析框架（景氣循環四階段：復甦期、成長期、榮景期、衰退期），建構了完整的數據自動化下載、本地時序資料庫維護、以及現代化互動視覺化儀表板。
 
 ---
 
 ## 📌 核心功能
 
-1. **愛榭克總經分析框架 (`izaax_macro_framework.md`)**：
+1. **總經分析模組框架 (`macro_framework.md`)**：
    - 詳細記錄四階段景氣循環特徵與定量判斷標準。
    - 彙整 23 項核心美國總經指標（就業、消費、通膨、製造、房地產、利率與公債利差）之出處與規律發布日程。
 
@@ -15,7 +15,7 @@
    - `batch_download_agent.py`：批次爬取自 2000 年以來的長天期歷史原始數據，儲存於 SQLite (`macro_data.db`)。
    - `update_daemon_agent.py`：常駐背景代理程式，每日自動追蹤最新發布數據並執行增量更新。
 
-3. **前端視覺化與總經診斷儀表板 (`macro_dashboard.py`)**：
+3. **前端視覺化與總經診斷儀表板 (`macro_dashboard.py` / GitHub Pages)**：
    - **分頁 1：📊 指標互動走勢圖**
      - 支援滑鼠放大、縮小、平移。
      - 雙 Y 軸配置（解決大數值與小比例指標之刻度壓縮問題）。
@@ -31,14 +31,17 @@
 ## 📂 專案架構
 
 ```text
-izaax-macro-platform/
+macro-platform/
 │
-├── izaax_macro_framework.md  # 愛榭克總經理論與指標架構文件
+├── macro_framework.md        # 總經理論與指標架構文件
 ├── batch_download_agent.py   # 歷史原始數據批次下載腳本
 ├── update_daemon_agent.py    # 定期增量更新背景常駐程式
 ├── macro_dashboard.py        # Streamlit + Plotly 前端儀表板
 ├── macro_data.db             # 本地 SQLite 時序資料庫 (內含 23 項指標數據)
 ├── requirements.txt          # Python 依賴套件清單
+├── docs/                     # GitHub Pages 靜態網站目錄
+│   ├── index.html            # 靜態互動儀表板
+│   └── data.js               # 預編譯指標數據庫
 └── README.md                 # 專案說明文件
 ```
 
@@ -65,7 +68,9 @@ pip install -r requirements.txt
 
 ### 3. 啟動視覺化儀表板
 
-```bash
-streamlit run macro_dashboard.py
-```
-啟動後於瀏覽器開啟 `http://localhost:8501` 即可開始使用。
+- **本地 Streamlit 執行**：
+  ```bash
+  streamlit run macro_dashboard.py
+  ```
+- **線上 GitHub Pages 瀏覽**：
+  直接開啟 GitHub Pages 部署網址即可。

@@ -3,7 +3,7 @@ import pandas as pd
 import pandas_datareader.data as web
 import datetime
 
-# 總經指標代碼對應表 (愛榭克總經框架常用指標)
+# 總經指標代碼對應表 (總經分析模組常用指標)
 INDICATORS = {
     'PAYEMS': '非農就業人數',
     'UNRATE': '失業率',
