@@ -481,12 +481,16 @@ def render_diagnosis_page(df):
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric("勞動就業 (失業率 / 初領)", f"{diag['unrate']:.1f}%" if diag['unrate'] else "N/A", f"初領 {diag['icsa']/1000:.0f}K 人" if diag['icsa'] else "N/A")
+        st.caption("[查看 UNRATE FRED 圖表 ↗](https://fred.stlouisfed.org/series/UNRATE)")
     with col2:
         st.metric("通膨指標 (CPI YoY)", f"{diag['cpi_yoy']:.2f}%" if diag['cpi_yoy'] else "N/A", "通膨受控降溫", delta_color="inverse")
+        st.caption("[查看 CPIAUCSL FRED 圖表 ↗](https://fred.stlouisfed.org/series/CPIAUCSL)")
     with col3:
         st.metric("殖利率利差 (10Y-2Y)", f"{diag['t10y2y']:+.2f}%" if diag['t10y2y'] is not None else "N/A", "利差翻正" if diag['t10y2y'] and diag['t10y2y'] > 0 else "倒掛中")
+        st.caption("[查看 T10Y2Y FRED 圖表 ↗](https://fred.stlouisfed.org/series/T10Y2Y)")
     with col4:
         st.metric("終端消費 (零售銷售 YoY)", f"{diag['rsxfs_yoy']:+.2f}%" if diag['rsxfs_yoy'] else "N/A", "實體內需支撐")
+        st.caption("[查看 RSXFS FRED 圖表 ↗](https://fred.stlouisfed.org/series/RSXFS)")
 
     st.divider()
 
@@ -563,9 +567,17 @@ def render_diagnosis_page(df):
             "最新資料日期": r['latest_date'],
             f"最新數值 ({r['unit']})": val_str,
             "前期變動 (MoM/QoQ)": mom_str,
-            "年增率/差值 (YoY)": yoy_str
+            "年增率/差值 (YoY)": yoy_str,
+            "FRED 官方連結": f"https://fred.stlouisfed.org/series/{r['code']}"
         })
-    st.dataframe(pd.DataFrame(formatted_rows), use_container_width=True, hide_index=True)
+    st.dataframe(
+        pd.DataFrame(formatted_rows),
+        column_config={
+            "FRED 官方連結": st.column_config.LinkColumn("FRED 圖表 ↗", display_text="查看圖表 ↗")
+        },
+        use_container_width=True,
+        hide_index=True
+    )
 
 
 # ----------------- 頁面 3: 歷史時空回顧 -----------------
@@ -629,12 +641,16 @@ def render_history_page(df):
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric("當時失業率 / 初領", f"{diag['unrate']:.1f}%" if diag['unrate'] else "N/A", f"初領 {diag['icsa']/1000:.0f}K 人" if diag['icsa'] else "N/A")
+        st.caption("[查看 UNRATE FRED 圖表 ↗](https://fred.stlouisfed.org/series/UNRATE)")
     with col2:
         st.metric("當時 CPI 年增率", f"{diag['cpi_yoy']:.2f}%" if diag['cpi_yoy'] else "N/A", "通膨年增率")
+        st.caption("[查看 CPIAUCSL FRED 圖表 ↗](https://fred.stlouisfed.org/series/CPIAUCSL)")
     with col3:
         st.metric("當時利差 (10Y-2Y)", f"{diag['t10y2y']:+.2f}%" if diag['t10y2y'] is not None else "N/A", "倒掛" if diag['t10y2y'] and diag['t10y2y'] < 0 else "正斜率")
+        st.caption("[查看 T10Y2Y FRED 圖表 ↗](https://fred.stlouisfed.org/series/T10Y2Y)")
     with col4:
         st.metric("當時零售銷售年增", f"{diag['rsxfs_yoy']:+.2f}%" if diag['rsxfs_yoy'] else "N/A", "零售銷售年增")
+        st.caption("[查看 RSXFS FRED 圖表 ↗](https://fred.stlouisfed.org/series/RSXFS)")
 
     st.divider()
 
@@ -694,9 +710,9 @@ def render_history_page(df):
             st.plotly_chart(fig_spark, use_container_width=True)
             
             st.markdown(
-                f"<div style='font-size:0.8rem; color:#64748b; margin-top:-10px; margin-bottom:15px; display:flex; justify-content:space-between;'>"
-                f"<span>當時數值: <b>{r['value']:.2f} {r['unit']}</b></span>"
-                f"<span>YoY: <b>{r['yoy']:+.2f}%</b></span>"
+                f"<div style='font-size:0.85rem; margin-top:-10px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;'>"
+                f"<span><a href='https://fred.stlouisfed.org/series/{code}' target='_blank' style='font-weight:700; color:#2563eb; text-decoration:none;'>🔗 {r['name']} ↗</a>: <b>{r['value']:.2f} {r['unit']}</b></span>"
+                f"<span style='color:#64748b;'>YoY: <b>{r['yoy']:+.2f}%</b></span>"
                 f"</div>", 
                 unsafe_allow_html=True
             )
@@ -725,9 +741,17 @@ def render_history_page(df):
             "當時最新公佈日期": r['latest_date'],
             f"數值 ({r['unit']})": val_str,
             "前期變動 (MoM)": mom_str,
-            "年增率/差值 (YoY)": yoy_str
+            "年增率/差值 (YoY)": yoy_str,
+            "FRED 官方連結": f"https://fred.stlouisfed.org/series/{r['code']}"
         })
-    st.dataframe(pd.DataFrame(formatted_rows), use_container_width=True, hide_index=True)
+    st.dataframe(
+        pd.DataFrame(formatted_rows),
+        column_config={
+            "FRED 官方連結": st.column_config.LinkColumn("FRED 圖表 ↗", display_text="查看圖表 ↗")
+        },
+        use_container_width=True,
+        hide_index=True
+    )
 
 
 # ----------------- 主程式進入點 -----------------
@@ -736,13 +760,30 @@ def main():
     if df.empty:
         st.stop()
 
-    st.sidebar.title("📌 導航功能選單")
-    app_page = st.sidebar.radio(
-        "前往頁面",
-        options=["📊 指標互動走勢圖", "📋 最新數據與總經診斷", "🕰️ 歷史時空回顧"],
-        index=1  # 預設先看最新總經診斷
-    )
-    st.sidebar.divider()
+    with st.sidebar:
+        st.title("📌 導航功能選單")
+        app_page = st.radio(
+            "前往頁面",
+            options=["📊 指標互動走勢圖", "📋 最新數據與總經診斷", "🕰️ 歷史時空回顧"],
+            index=1
+        )
+        st.divider()
+        st.subheader("🔍 畫面字體縮放")
+        font_size = st.select_slider(
+            "全局字體大小",
+            options=["85%", "92%", "100%", "110%", "120%", "130%"],
+            value="100%",
+            help="調整全畫面文字、標題與圖表文字的顯示大小比例"
+        )
+        st.divider()
+
+    st.markdown(f"""
+    <style>
+        html, body, [class*="css"], .stMarkdown, .stText, p, span, label, div, table, td, th {{
+            font-size: {font_size} !important;
+        }}
+    </style>
+    """, unsafe_allow_html=True)
 
     if app_page == "📊 指標互動走勢圖":
         render_chart_page(df)

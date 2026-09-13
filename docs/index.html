@@ -23,6 +23,7 @@
         }
     </script>
     <style>
+        html { font-size: 16px; transition: font-size 0.15s ease-in-out; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
         .card-shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.08); }
         .sparkline-svg { width: 100%; height: 52px; overflow: visible; }
@@ -46,17 +47,27 @@
                 </div>
             </div>
 
-            <!-- 分頁切換鈕 -->
-            <div class="flex space-x-1 sm:space-x-2 border border-slate-200 rounded-lg p-1 bg-slate-100">
-                <button id="nav-btn-diagnosis" onclick="switchTab('diagnosis')" class="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-md font-semibold transition-all bg-white text-blue-700 shadow-sm">
-                    📋 最新總經深度診斷
-                </button>
-                <button id="nav-btn-history" onclick="switchTab('history')" class="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all">
-                    🕰️ 歷史時空回顧
-                </button>
-                <button id="nav-btn-chart" onclick="switchTab('chart')" class="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all">
-                    📈 指標互動走勢圖
-                </button>
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <!-- 全畫面字體大小縮放控制 -->
+                <div class="flex items-center border border-slate-200 rounded-lg p-0.5 sm:p-1 bg-slate-100 text-xs shadow-inner" title="全局字體縮放">
+                    <span class="text-slate-500 px-1 sm:px-1.5 text-[11px] font-semibold hidden md:inline">字體</span>
+                    <button onclick="changeFontSize(-1)" title="縮小畫面字體 (A-)" class="px-2 py-1 bg-white hover:bg-slate-200 rounded text-slate-700 font-bold text-xs shadow-sm transition-all active:scale-95">A-</button>
+                    <button onclick="changeFontSize(0)" id="font-zoom-label" title="點擊重設字體大小 (100%)" class="px-1.5 py-1 text-slate-600 font-mono text-[11px] font-bold hover:text-blue-600 transition-colors">100%</button>
+                    <button onclick="changeFontSize(1)" title="放大畫面字體 (A+)" class="px-2 py-1 bg-white hover:bg-slate-200 rounded text-slate-700 font-bold text-xs shadow-sm transition-all active:scale-95">A+</button>
+                </div>
+
+                <!-- 分頁切換鈕 -->
+                <div class="flex space-x-1 sm:space-x-2 border border-slate-200 rounded-lg p-1 bg-slate-100">
+                    <button id="nav-btn-diagnosis" onclick="switchTab('diagnosis')" class="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-md font-semibold transition-all bg-white text-blue-700 shadow-sm">
+                        📋 最新總經深度診斷
+                    </button>
+                    <button id="nav-btn-history" onclick="switchTab('history')" class="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all">
+                        🕰️ 歷史時空回顧
+                    </button>
+                    <button id="nav-btn-chart" onclick="switchTab('chart')" class="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all">
+                        📈 指標互動走勢圖
+                    </button>
+                </div>
             </div>
         </div>
     </header>
@@ -87,40 +98,68 @@
 
             <!-- 4 個即時核心體質卡片 -->
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
-                    <p class="text-xs font-medium text-slate-500">勞動就業市場 (失業率)</p>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow hover:border-blue-300 transition-all">
+                    <p class="text-xs font-medium text-slate-500">
+                        <a href="https://fred.stlouisfed.org/series/UNRATE" target="_blank" rel="noopener noreferrer" title="另開視窗查看 FRED 官方圖表" class="hover:text-blue-600 hover:underline inline-flex items-center justify-between w-full group">
+                            <span>勞動就業市場 (失業率)</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-2xl sm:text-3xl font-bold text-slate-900">4.1%</span>
                         <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">健康韌性</span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-2">初領救濟金 206K (未破250K警戒)</p>
+                    <p class="text-xs text-slate-500 mt-2">
+                        <a href="https://fred.stlouisfed.org/series/ICSA" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline">初領救濟金 206K (未破250K警戒) ↗</a>
+                    </p>
                 </div>
 
-                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
-                    <p class="text-xs font-medium text-slate-500">通膨受控降溫 (CPI YoY)</p>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow hover:border-blue-300 transition-all">
+                    <p class="text-xs font-medium text-slate-500">
+                        <a href="https://fred.stlouisfed.org/series/CPIAUCSL" target="_blank" rel="noopener noreferrer" title="另開視窗查看 FRED 官方圖表" class="hover:text-blue-600 hover:underline inline-flex items-center justify-between w-full group">
+                            <span>通膨受控降溫 (CPI YoY)</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-2xl sm:text-3xl font-bold text-slate-900">3.35%</span>
                         <span class="text-xs font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">受控降溫</span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-2">核心 PCE 3.34% 穩定收斂</p>
+                    <p class="text-xs text-slate-500 mt-2">
+                        <a href="https://fred.stlouisfed.org/series/PCEPILFE" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline">核心 PCE 3.34% 穩定收斂 ↗</a>
+                    </p>
                 </div>
 
-                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
-                    <p class="text-xs font-medium text-slate-500">殖利率利差 (10Y-2Y)</p>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow hover:border-blue-300 transition-all">
+                    <p class="text-xs font-medium text-slate-500">
+                        <a href="https://fred.stlouisfed.org/series/T10Y2Y" target="_blank" rel="noopener noreferrer" title="另開視窗查看 FRED 官方圖表" class="hover:text-blue-600 hover:underline inline-flex items-center justify-between w-full group">
+                            <span>殖利率利差 (10Y-2Y)</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-2xl sm:text-3xl font-bold text-emerald-600">+0.33%</span>
                         <span class="text-xs font-medium text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded font-bold">已解倒掛</span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-2">10Y-3M 同步回升至 +0.89%</p>
+                    <p class="text-xs text-slate-500 mt-2">
+                        <a href="https://fred.stlouisfed.org/series/T10Y3M" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline">10Y-3M 同步回升至 +0.89% ↗</a>
+                    </p>
                 </div>
 
-                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
-                    <p class="text-xs font-medium text-slate-500">終端零售消費 (YoY)</p>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow hover:border-blue-300 transition-all">
+                    <p class="text-xs font-medium text-slate-500">
+                        <a href="https://fred.stlouisfed.org/series/RSXFS" target="_blank" rel="noopener noreferrer" title="另開視窗查看 FRED 官方圖表" class="hover:text-blue-600 hover:underline inline-flex items-center justify-between w-full group">
+                            <span>終端零售消費 (YoY)</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-2xl sm:text-3xl font-bold text-slate-900">+5.01%</span>
                         <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">強韌增長</span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-2">耐久財訂單 YoY +12.0% 擴張</p>
+                    <p class="text-xs text-slate-500 mt-2">
+                        <a href="https://fred.stlouisfed.org/series/DGORDER" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline">耐久財訂單 YoY +12.0% 擴張 ↗</a>
+                    </p>
                 </div>
             </div>
 
@@ -273,35 +312,61 @@
                         </thead>
                         <tbody class="divide-y divide-slate-200 text-xs sm:text-sm">
                             <tr class="hover:bg-slate-50">
-                                <td class="py-3 px-4 font-bold text-slate-900">初領失業救濟金 (ICSA)</td>
+                                <td class="py-3 px-4 font-bold text-slate-900">
+                                    <a href="https://fred.stlouisfed.org/series/ICSA" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline inline-flex items-center gap-1 group">
+                                        <span>初領失業救濟金 (ICSA)</span>
+                                        <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                    </a>
+                                </td>
                                 <td class="py-3 px-4 text-slate-500">每週四 (高頻)</td>
                                 <td class="py-3 px-4 text-center font-bold text-emerald-600">206K 人</td>
                                 <td class="py-3 px-4 text-center font-bold text-rose-600 bg-rose-50/50">4週均線 > 250K</td>
                                 <td class="py-3 px-4 text-slate-600">最敏感的裁員先導指標。若突破 25 萬人，代表就業進入實質惡化，應立即降低股票部位。</td>
                             </tr>
                             <tr class="hover:bg-slate-50">
-                                <td class="py-3 px-4 font-bold text-slate-900">核心 PCE 物價 MoM (PCEPILFE)</td>
+                                <td class="py-3 px-4 font-bold text-slate-900">
+                                    <a href="https://fred.stlouisfed.org/series/PCEPILFE" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline inline-flex items-center gap-1 group">
+                                        <span>核心 PCE 物價 MoM (PCEPILFE)</span>
+                                        <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                    </a>
+                                </td>
                                 <td class="py-3 px-4 text-slate-500">每月底</td>
                                 <td class="py-3 px-4 text-center font-bold text-blue-600">3.34% (YoY)</td>
                                 <td class="py-3 px-4 text-center font-bold text-amber-600 bg-amber-50/50">連續 2 個月 MoM > 0.3%</td>
                                 <td class="py-3 px-4 text-slate-600">Fed 定錨目標。若 MoM 持續高於 0.3% (年化 3.6%)，降息窗口將關閉，股債受折現率壓制。</td>
                             </tr>
                             <tr class="hover:bg-slate-50">
-                                <td class="py-3 px-4 font-bold text-slate-900">建築許可 (PERMIT) & 新屋開工 (HOUST)</td>
+                                <td class="py-3 px-4 font-bold text-slate-900">
+                                    <span class="inline-flex items-center gap-1.5">
+                                        <a href="https://fred.stlouisfed.org/series/PERMIT" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">建築許可 (PERMIT) ↗</a>
+                                        <span>&</span>
+                                        <a href="https://fred.stlouisfed.org/series/HOUST" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline">新屋開工 (HOUST) ↗</a>
+                                    </span>
+                                </td>
                                 <td class="py-3 px-4 text-slate-500">每月中旬</td>
                                 <td class="py-3 px-4 text-center font-bold text-slate-700">開工 -13.5% | 許可 +2.4%</td>
                                 <td class="py-3 px-4 text-center font-bold text-emerald-600 bg-emerald-50/50">開工與許可連續 2 季正增長</td>
                                 <td class="py-3 px-4 text-slate-600">房地產為景氣先行火車頭。若開工回升，確認降息已實質傳導至民間實體，增持週期成長股。</td>
                             </tr>
                             <tr class="hover:bg-slate-50">
-                                <td class="py-3 px-4 font-bold text-slate-900">耐久財新訂單 (DGORDER)</td>
+                                <td class="py-3 px-4 font-bold text-slate-900">
+                                    <a href="https://fred.stlouisfed.org/series/DGORDER" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline inline-flex items-center gap-1 group">
+                                        <span>耐久財新訂單 (DGORDER)</span>
+                                        <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                    </a>
+                                </td>
                                 <td class="py-3 px-4 text-slate-500">每月中下旬</td>
                                 <td class="py-3 px-4 text-center font-bold text-emerald-600">+12.0% (YoY)</td>
                                 <td class="py-3 px-4 text-center font-bold text-rose-600 bg-rose-50/50">YoY 增速轉負 (< 0%)</td>
                                 <td class="py-3 px-4 text-slate-600">企業實體資本支出 (Capex) 晴雨表。若跌破零軸，反映企業對未來需求轉趨悲觀並凍結投資。</td>
                             </tr>
                             <tr class="hover:bg-slate-50">
-                                <td class="py-3 px-4 font-bold text-slate-900">M2 貨幣供給年增率 (M2SL YoY)</td>
+                                <td class="py-3 px-4 font-bold text-slate-900">
+                                    <a href="https://fred.stlouisfed.org/series/M2SL" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline inline-flex items-center gap-1 group">
+                                        <span>M2 貨幣供給年增率 (M2SL YoY)</span>
+                                        <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                    </a>
+                                </td>
                                 <td class="py-3 px-4 text-slate-500">每月底</td>
                                 <td class="py-3 px-4 text-center font-bold text-emerald-600">+5.41% (YoY)</td>
                                 <td class="py-3 px-4 text-center font-bold text-blue-600 bg-blue-50/50">年增率穩定保持 > 5.0%</td>
@@ -516,7 +581,12 @@
             <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pb-4 border-b border-slate-200">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">📌 主要走勢指標</label>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-bold text-slate-700 uppercase">📌 主要走勢指標</label>
+                            <a id="chart-fred-link" href="https://fred.stlouisfed.org/series/T10Y2Y" target="_blank" rel="noopener noreferrer" class="text-xs text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center gap-1 font-semibold" title="另開視窗查看 FRED 官方圖表">
+                                <span>FRED 圖表 ↗</span>
+                            </a>
+                        </div>
                         <select id="main-indicator-select" onchange="renderPlotlyChart()" class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-sm rounded-lg p-2.5 font-medium"></select>
                     </div>
                     <div>
@@ -770,19 +840,31 @@
 
             const cards = document.getElementById('hist-stat-cards');
             cards.innerHTML = `
-                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
-                    <p class="text-xs font-medium text-slate-500">當時失業率 (UNRATE)</p>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow hover:border-blue-300 transition-all">
+                    <p class="text-xs font-medium text-slate-500">
+                        <a href="https://fred.stlouisfed.org/series/UNRATE" target="_blank" rel="noopener noreferrer" title="另開視窗查看 FRED 官方圖表" class="hover:text-blue-600 hover:underline inline-flex items-center justify-between w-full group">
+                            <span>當時失業率 (UNRATE)</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-2xl font-bold text-slate-900">${unrate ? unrate.toFixed(1) + '%' : 'N/A'}</span>
                         <span class="text-xs font-medium ${unrate >= 5.0 ? 'text-rose-600 bg-rose-50' : 'text-emerald-600 bg-emerald-50'} px-1.5 py-0.5 rounded">
                             ${unrate >= 5.0 ? '惡化承壓' : '就業平穩'}
                         </span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-2">初領救濟金 ${(icsa/1000).toFixed(0)}K 人</p>
+                    <p class="text-xs text-slate-500 mt-2">
+                        <a href="https://fred.stlouisfed.org/series/ICSA" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline">初領救濟金 ${(icsa/1000).toFixed(0)}K 人 ↗</a>
+                    </p>
                 </div>
 
-                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
-                    <p class="text-xs font-medium text-slate-500">當時通膨年增率 (CPI YoY)</p>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow hover:border-blue-300 transition-all">
+                    <p class="text-xs font-medium text-slate-500">
+                        <a href="https://fred.stlouisfed.org/series/CPIAUCSL" target="_blank" rel="noopener noreferrer" title="另開視窗查看 FRED 官方圖表" class="hover:text-blue-600 hover:underline inline-flex items-center justify-between w-full group">
+                            <span>當時通膨年增率 (CPI YoY)</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-2xl font-bold text-slate-900">${cpi_yoy ? cpi_yoy.toFixed(2) + '%' : 'N/A'}</span>
                         <span class="text-xs font-medium ${cpi_yoy >= 4.0 ? 'text-amber-600 bg-amber-50' : 'text-blue-600 bg-blue-50'} px-1.5 py-0.5 rounded">
@@ -792,8 +874,13 @@
                     <p class="text-xs text-slate-500 mt-2">核心物價走向</p>
                 </div>
 
-                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
-                    <p class="text-xs font-medium text-slate-500">公債利差 (10Y-2Y)</p>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow hover:border-blue-300 transition-all">
+                    <p class="text-xs font-medium text-slate-500">
+                        <a href="https://fred.stlouisfed.org/series/T10Y2Y" target="_blank" rel="noopener noreferrer" title="另開視窗查看 FRED 官方圖表" class="hover:text-blue-600 hover:underline inline-flex items-center justify-between w-full group">
+                            <span>公債利差 (10Y-2Y)</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-2xl font-bold ${t10y2y < 0 ? 'text-amber-600' : 'text-emerald-600'}">${t10y2y !== null ? (t10y2y > 0 ? '+' : '') + t10y2y.toFixed(2) + '%' : 'N/A'}</span>
                         <span class="text-xs font-medium ${t10y2y < 0 ? 'text-amber-700 bg-amber-100' : 'text-emerald-700 bg-emerald-100'} px-1.5 py-0.5 rounded font-bold">
@@ -803,15 +890,22 @@
                     <p class="text-xs text-slate-500 mt-2">殖利率曲線形態</p>
                 </div>
 
-                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
-                    <p class="text-xs font-medium text-slate-500">終端消費 (零售銷售 YoY)</p>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow hover:border-blue-300 transition-all">
+                    <p class="text-xs font-medium text-slate-500">
+                        <a href="https://fred.stlouisfed.org/series/RSXFS" target="_blank" rel="noopener noreferrer" title="另開視窗查看 FRED 官方圖表" class="hover:text-blue-600 hover:underline inline-flex items-center justify-between w-full group">
+                            <span>終端消費 (零售銷售 YoY)</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-2xl font-bold text-slate-900">${rsxfs_yoy ? (rsxfs_yoy > 0 ? '+' : '') + rsxfs_yoy.toFixed(2) + '%' : 'N/A'}</span>
                         <span class="text-xs font-medium ${rsxfs_yoy < 0 ? 'text-rose-600 bg-rose-50' : 'text-emerald-600 bg-emerald-50'} px-1.5 py-0.5 rounded">
                             ${rsxfs_yoy < 0 ? '消費收縮' : '穩步擴張'}
                         </span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-2">耐久財訂單 YoY: ${dgorder_yoy !== null ? (dgorder_yoy > 0 ? '+' : '') + dgorder_yoy.toFixed(1) + '%' : 'N/A'}</p>
+                    <p class="text-xs text-slate-500 mt-2">
+                        <a href="https://fred.stlouisfed.org/series/DGORDER" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline">耐久財訂單 YoY: ${dgorder_yoy !== null ? (dgorder_yoy > 0 ? '+' : '') + dgorder_yoy.toFixed(1) + '%' : 'N/A'} ↗</a>
+                    </p>
                 </div>
             `;
 
@@ -839,7 +933,7 @@
                 if (!item) return;
 
                 const card = document.createElement('div');
-                card.className = "p-4 bg-slate-50 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between hover:bg-white transition-all";
+                card.className = "p-4 bg-slate-50 rounded-xl border border-slate-200 card-shadow flex flex-col justify-between hover:bg-white hover:border-blue-300 transition-all";
 
                 const vals = sparkMode === 'yoy' ? item.spark_yoy : item.spark_raw;
                 const isDown = vals.length > 1 && vals[vals.length - 1] < vals[0];
@@ -851,7 +945,10 @@
 
                 card.innerHTML = `
                     <div class="flex items-center justify-between mb-1">
-                        <span class="text-xs font-bold text-slate-800">${item.name}</span>
+                        <a href="https://fred.stlouisfed.org/series/${item.code}" target="_blank" rel="noopener noreferrer" title="另開視窗查看 ${item.name} (${item.code}) FRED 圖表" class="text-xs font-bold text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center gap-1 group">
+                            <span>${item.name}</span>
+                            <svg class="w-3 h-3 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
                         <span class="text-xs font-mono text-slate-400">${item.code}</span>
                     </div>
                     <div class="flex items-baseline justify-between mb-2">
@@ -898,7 +995,12 @@
 
                 tr.innerHTML = `
                     <td class="py-2.5 px-4 text-xs font-semibold text-slate-500"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">${item.category}</span></td>
-                    <td class="py-2.5 px-4 font-bold text-slate-900">${item.name}</td>
+                    <td class="py-2.5 px-4 font-bold text-slate-900">
+                        <a href="https://fred.stlouisfed.org/series/${item.code}" target="_blank" rel="noopener noreferrer" title="另開視窗查看 ${item.name} (${item.code}) FRED 官方圖表" class="text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center gap-1.5 group">
+                            <span>${item.name}</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </td>
                     <td class="py-2.5 px-4 text-xs font-mono text-slate-500">${item.code}</td>
                     <td class="py-2.5 px-4 text-slate-600 text-xs">${item.latest_date}</td>
                     <td class="py-2.5 px-4 text-right font-bold text-slate-900">${valDisplay} <span class="text-xs text-slate-400 font-normal">(${item.unit})</span></td>
@@ -948,7 +1050,12 @@
 
                 tr.innerHTML = `
                     <td class="py-3 px-4 text-xs font-semibold text-slate-500"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded">${item.category}</span></td>
-                    <td class="py-3 px-4 font-bold text-slate-900">${item.name}</td>
+                    <td class="py-3 px-4 font-bold text-slate-900">
+                        <a href="https://fred.stlouisfed.org/series/${item.code}" target="_blank" rel="noopener noreferrer" title="另開視窗查看 ${item.name} (${item.code}) FRED 官方圖表" class="text-blue-600 hover:text-blue-800 hover:underline inline-flex items-center gap-1.5 group">
+                            <span>${item.name}</span>
+                            <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </td>
                     <td class="py-3 px-4 text-xs font-mono text-slate-500">${item.code}</td>
                     <td class="py-3 px-4 text-slate-600 text-xs">${item.latest_date}</td>
                     <td class="py-3 px-4 text-right font-bold text-slate-900">${valDisplay} <span class="text-xs text-slate-400 font-normal">(${item.unit})</span></td>
@@ -1137,6 +1244,11 @@
             if (format === 'yoy') yTitle = "YoY 年增率 (%) / 百分點差值";
             if (format === 'mom') yTitle = "MoM 月增率 (%) / 百分點差值";
 
+            const fredLinkBtn = document.getElementById('chart-fred-link');
+            if (fredLinkBtn) {
+                fredLinkBtn.href = `https://fred.stlouisfed.org/series/${mainCode}`;
+            }
+
             const layout = {
                 hovermode: 'x unified',
                 margin: { l: 50, r: 50, t: 20, b: 40 },
@@ -1155,7 +1267,56 @@
             Plotly.newPlot('plotly-chart', traces, layout, { responsive: true, displaylogo: false });
         }
 
+        // ==================== 全畫面字體大小縮放控制 ====================
+        let currentFontScale = 100;
+        const FONT_SCALES = [80, 90, 100, 110, 120, 130, 140];
+
+        function changeFontSize(step) {
+            let idx = FONT_SCALES.indexOf(currentFontScale);
+            if (idx === -1) idx = 2; // 預設 100%
+            
+            if (step === 0) {
+                idx = 2; // 重設為 100%
+            } else if (step > 0 && idx < FONT_SCALES.length - 1) {
+                idx++;
+            } else if (step < 0 && idx > 0) {
+                idx--;
+            }
+            
+            currentFontScale = FONT_SCALES[idx];
+            document.documentElement.style.fontSize = `${(currentFontScale / 100) * 16}px`;
+            
+            const label = document.getElementById('font-zoom-label');
+            if (label) label.innerText = `${currentFontScale}%`;
+            
+            try {
+                localStorage.setItem('macro_font_scale', currentFontScale);
+            } catch(e) {}
+
+            setTimeout(() => {
+                if (window.Plotly && document.getElementById('plotly-chart')) {
+                    Plotly.Plots.resize('plotly-chart');
+                }
+            }, 150);
+        }
+
+        function initFontSize() {
+            try {
+                const saved = localStorage.getItem('macro_font_scale');
+                if (saved) {
+                    const val = parseInt(saved, 10);
+                    if (FONT_SCALES.includes(val)) {
+                        currentFontScale = val;
+                        document.documentElement.style.fontSize = `${(currentFontScale / 100) * 16}px`;
+                        const label = document.getElementById('font-zoom-label');
+                        if (label) label.innerText = `${currentFontScale}%`;
+                    }
+                }
+            } catch(e) {}
+        }
+
         window.onload = () => {
+            initFontSize();
             renderSummaryTable('全部');
             initChartControls();
         };
