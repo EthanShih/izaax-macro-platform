@@ -811,7 +811,7 @@
                             ${rsxfs_yoy < 0 ? '消費收縮' : '穩步擴張'}
                         </span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-2">耐久財訂單 YoY: ${dgorder_yoy:+.1f}%</p>
+                    <p class="text-xs text-slate-500 mt-2">耐久財訂單 YoY: ${dgorder_yoy !== null ? (dgorder_yoy > 0 ? '+' : '') + dgorder_yoy.toFixed(1) + '%' : 'N/A'}</p>
                 </div>
             `;
 
