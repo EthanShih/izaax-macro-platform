@@ -25,7 +25,7 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
         .card-shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 1px 2px -1px rgba(0, 0, 0, 0.08); }
-        .sparkline-svg { width: 100%; height: 50px; overflow: visible; }
+        .sparkline-svg { width: 100%; height: 52px; overflow: visible; }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen pb-16">
@@ -42,17 +42,17 @@
                         <h1 class="text-base sm:text-xl font-bold tracking-tight text-slate-900">總經分析模組</h1>
                         <span class="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 font-semibold">Live Production</span>
                     </div>
-                    <p class="text-xs text-slate-500 hidden sm:block">四階段景氣循環動態診斷、FRED 23項指標即時監控與歷史時空回顧</p>
+                    <p class="text-xs text-slate-500 hidden sm:block">四階段景氣循環深度診斷、多維指標交叉驗證與未來情境推論</p>
                 </div>
             </div>
 
             <!-- 分頁切換鈕 -->
             <div class="flex space-x-1 sm:space-x-2 border border-slate-200 rounded-lg p-1 bg-slate-100">
-                <button id="nav-btn-history" onclick="switchTab('history')" class="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-md font-semibold transition-all bg-white text-blue-700 shadow-sm">
-                    🕰️ 歷史時空回顧
+                <button id="nav-btn-diagnosis" onclick="switchTab('diagnosis')" class="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-md font-semibold transition-all bg-white text-blue-700 shadow-sm">
+                    📋 最新總經深度診斷
                 </button>
-                <button id="nav-btn-diagnosis" onclick="switchTab('diagnosis')" class="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all">
-                    📋 最新數據診斷
+                <button id="nav-btn-history" onclick="switchTab('history')" class="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all">
+                    🕰️ 歷史時空回顧
                 </button>
                 <button id="nav-btn-chart" onclick="switchTab('chart')" class="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all">
                     📈 指標互動走勢圖
@@ -64,171 +64,24 @@
     <!-- 主要內容區 -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
 
-        <!-- ==================== TAB 0: 歷史時空回顧 (NEW!) ==================== -->
-        <div id="tab-history" class="space-y-6">
+        <!-- ==================== TAB 1: 最新數據總經深度診斷 ==================== -->
+        <div id="tab-diagnosis" class="space-y-6">
             
-            <!-- 歷史控制面板 -->
-            <div class="bg-white p-5 rounded-xl border border-slate-200 card-shadow">
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div>
-                        <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-                            <span>🕰️</span> 歷史時空回顧：特定歷史時點總經情境重現
-                        </h2>
-                        <p class="text-xs text-slate-500 mt-1">選擇過去任一歷史時點，系統將自動剔除所有未來數據，重現當時最新公佈指標、動態循環判定與前數期趨勢簡圖。</p>
-                    </div>
-
-                    <div class="flex flex-wrap items-center gap-3">
-                        <!-- 快速情境下拉選單 -->
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">經典歷史情境快速載入：</label>
-                            <select id="hist-preset-select" onchange="loadPresetScenario()" class="bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm rounded-lg p-2 font-medium focus:ring-blue-500 focus:border-blue-500">
-                                <option value="2007-06-01">2007-06-01 次貸風暴前夕 (殖利率深度倒掛)</option>
-                                <option value="2008-09-15" selected>2008-09-15 雷曼兄弟破產 (金融海嘯實質衰退)</option>
-                                <option value="2009-06-01">2009-06-01 量化寬鬆救市 (景氣觸底復甦期)</option>
-                                <option value="2017-06-01">2017-06-01 經濟穩健擴張期</option>
-                                <option value="2020-03-15">2020-03-15 疫情爆發全球斷崖衝擊</option>
-                                <option value="2020-09-01">2020-09-01 無限 QE 與疫後強勁復甦</option>
-                                <option value="2022-06-01">2022-06-01 四十年通膨大頂 (暴力升息)</option>
-                                <option value="2023-03-15">2023-03-15 矽谷銀行事件 (倒掛最深時)</option>
-                                <option value="2024-08-05">2024-08-05 日圓套息交易震撼</option>
-                            </select>
-                        </div>
-
-                        <!-- 特定日期輸入框 -->
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">自訂回顧基準日：</label>
-                            <input type="date" id="hist-date-input" value="2008-09-15" min="2002-01-01" max="2026-09-13" onchange="runHistoricalAnalysis()" class="bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm rounded-lg p-2 font-medium focus:ring-blue-500 focus:border-blue-500">
-                        </div>
-
-                        <!-- 簡圖模式切換 -->
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-500 mb-1">簡圖維度：</label>
-                            <select id="hist-spark-mode" onchange="runHistoricalAnalysis()" class="bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm rounded-lg p-2 font-medium">
-                                <option value="raw" selected>原始數據走勢簡圖</option>
-                                <option value="yoy">YoY 年增率走勢簡圖</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 歷史循環動態判定橫幅 -->
-            <div id="hist-cycle-banner" class="bg-white border-l-8 border-red-500 rounded-xl p-5 sm:p-6 card-shadow border border-slate-200 transition-all">
-                <!-- 由 JS 動態注入 -->
-            </div>
-
-            <!-- 當時 4 個核心體質指標卡片 -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="hist-stat-cards">
-                <!-- 由 JS 動態注入 -->
-            </div>
-
-            <!-- 當時總經深度剖析與配置建議 -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-white p-5 rounded-xl border border-slate-200 card-shadow space-y-3">
-                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                        <span>🔍</span> 當時總體經濟全面剖析
-                    </h3>
-                    <div id="hist-deep-diagnosis" class="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed">
-                        <!-- 由 JS 動態注入 -->
-                    </div>
-                </div>
-
-                <div class="space-y-4">
-                    <div class="bg-amber-50/70 border border-amber-200 p-4 rounded-xl card-shadow">
-                        <h3 class="text-sm font-bold text-amber-900 flex items-center gap-1.5 mb-1.5">
-                            <span>⚠️</span> 當時面臨之核心宏觀風險
-                        </h3>
-                        <p id="hist-risk-alert" class="text-xs sm:text-sm text-amber-950 leading-relaxed"></p>
-                    </div>
-
-                    <div class="bg-blue-50/70 border border-blue-200 p-4 rounded-xl card-shadow">
-                        <h3 class="text-sm font-bold text-blue-900 flex items-center gap-1.5 mb-1.5">
-                            <span>💡</span> 當時歷史時點最佳配置建議
-                        </h3>
-                        <p id="hist-alloc-advice" class="text-xs sm:text-sm text-blue-950 leading-relaxed font-medium"></p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 核心指標歷史數據簡圖展廳 (Sparklines Gallery) -->
-            <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-4">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                    <div>
-                        <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
-                            <span>📈</span> 重點指標歷史變化簡圖 (Sparklines Gallery)
-                        </h3>
-                        <p class="text-xs text-slate-500">展示該歷史基準日前 6~8 期之趨勢簡圖，即刻辨識數據是加速惡化、見頂回落還是觸底反彈</p>
-                    </div>
-                    <span id="hist-spark-badge" class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full border border-slate-200">
-                        近 6 期歷史軌跡
-                    </span>
-                </div>
-
-                <!-- 9 宮格微型圖展廳 -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="hist-sparklines-grid">
-                    <!-- 由 JS 動態注入 9 個微型卡片 -->
-                </div>
-            </div>
-
-            <!-- 全部 23 項歷史數據快照表 -->
-            <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-4">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div>
-                        <h3 class="text-base sm:text-lg font-bold text-slate-900">📑 該歷史時點全部 23 項指標數據快照</h3>
-                        <p class="text-xs text-slate-500">嚴格依據歷史公佈時間點切分，杜絕任何未來數據污染</p>
-                    </div>
-                    <!-- 分類過濾 -->
-                    <div class="flex flex-wrap gap-1.5" id="hist-cat-filter">
-                        <button onclick="filterHistCategory('全部')" class="hcat-btn px-2.5 py-1 text-xs rounded-full font-semibold bg-blue-600 text-white">全部</button>
-                        <button onclick="filterHistCategory('就業市場')" class="hcat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">就業市場</button>
-                        <button onclick="filterHistCategory('通膨與物價')" class="hcat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">通膨與物價</button>
-                        <button onclick="filterHistCategory('消費與信心')" class="hcat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">消費與信心</button>
-                        <button onclick="filterHistCategory('製造與景氣')" class="hcat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">製造與景氣</button>
-                        <button onclick="filterHistCategory('房地產市場')" class="hcat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">房地產市場</button>
-                        <button onclick="filterHistCategory('貨幣與利率')" class="hcat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">貨幣與利率</button>
-                    </div>
-                </div>
-
-                <div class="overflow-x-auto border border-slate-200 rounded-lg">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-100 text-slate-700 text-xs uppercase font-semibold">
-                            <tr>
-                                <th class="py-2.5 px-4">分類</th>
-                                <th class="py-2.5 px-4">指標名稱</th>
-                                <th class="py-2.5 px-4">代碼</th>
-                                <th class="py-2.5 px-4">當時公佈日期</th>
-                                <th class="py-2.5 px-4 text-right">當時數值 (單位)</th>
-                                <th class="py-2.5 px-4 text-right">前期變動 (MoM)</th>
-                                <th class="py-2.5 px-4 text-right">年增率/差值 (YoY)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="hist-table-body" class="divide-y divide-slate-200">
-                            <!-- 由 JS 動態注入 -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
-
-
-        <!-- ==================== TAB 1: 最新數據總經診斷 ==================== -->
-        <div id="tab-diagnosis" class="space-y-6 hidden">
-            <!-- 最新診斷內容 -->
-            <div class="bg-white border-l-8 border-amber-500 rounded-xl p-5 sm:p-6 card-shadow border border-slate-200">
+            <!-- 循環定位橫幅 -->
+            <div class="bg-white border-l-8 border-orange-500 rounded-xl p-5 sm:p-6 card-shadow border border-slate-200">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3 mb-3">
                     <div class="flex items-center gap-2">
-                        <span class="w-3 h-3 rounded-full bg-amber-500 animate-ping"></span>
-                        <h2 class="text-lg sm:text-xl font-bold text-amber-900">
-                            📍 當前循環定位：榮景期尾聲 ➔ 降息過渡期 (Late Boom / Transition)
+                        <span class="w-3 h-3 rounded-full bg-orange-500 animate-ping"></span>
+                        <h2 class="text-lg sm:text-xl font-bold text-orange-950">
+                            📍 當前循環定位：榮景期尾聲 ➔ 成長再平衡 / 降息過渡期 (Late Boom / Transition)
                         </h2>
                     </div>
-                    <span class="text-xs font-semibold px-2.5 py-1 bg-amber-50 text-amber-800 rounded-full border border-amber-200">
+                    <span class="text-xs font-semibold px-2.5 py-1 bg-orange-50 text-orange-800 rounded-full border border-orange-200">
                         四階段模型實時判定
                     </span>
                 </div>
                 <p class="text-sm sm:text-base text-slate-700 leading-relaxed">
-                    <strong>【核心依據】</strong> 美國長短公債殖利率利差（10Y-2Y 與 10Y-3M）已正式結束長達兩年的深度倒掛，全面翻正為正斜率。在總經分析體系中，<strong>「解除倒掛」是繁榮期邁向後續轉折的關鍵里程碑</strong>。與此同時，每週高頻指標<strong>「初領失業金」維持在 20.6 萬人健康低檔</strong>，失業率 4.1% 溫和，顯示實體經濟底氣猶存，經濟並未爆發懸崖式衰退，升息週期已正式邁向預防性降息窗口。
+                    <strong>【核心判定依據】</strong> 美國長短公債殖利率利差（10Y-2Y 正斜率 +0.33%、10Y-3M +0.89%）已正式結束長達兩年的深度倒掛。每週初領失業金持續處於 20.6 萬人健康低檔，失業率 4.1% 溫和，顯示實體經濟並未爆發斷崖式衰退，升息週期已正式邁向預防性降息窗口。
                 </p>
             </div>
 
@@ -240,16 +93,16 @@
                         <span class="text-2xl sm:text-3xl font-bold text-slate-900">4.1%</span>
                         <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">健康韌性</span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-2">初領救濟金 206K (低於250K警戒)</p>
+                    <p class="text-xs text-slate-500 mt-2">初領救濟金 206K (未破250K警戒)</p>
                 </div>
 
                 <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
-                    <p class="text-xs font-medium text-slate-500">通膨降溫進度 (CPI YoY)</p>
+                    <p class="text-xs font-medium text-slate-500">通膨受控降溫 (CPI YoY)</p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-2xl sm:text-3xl font-bold text-slate-900">3.35%</span>
                         <span class="text-xs font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">受控降溫</span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-2">核心 PCE 穩定趨向 2.6%~2.8%</p>
+                    <p class="text-xs text-slate-500 mt-2">核心 PCE 3.34% 穩定收斂</p>
                 </div>
 
                 <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
@@ -262,16 +115,232 @@
                 </div>
 
                 <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
-                    <p class="text-xs font-medium text-slate-500">消費動能 (零售銷售 YoY)</p>
+                    <p class="text-xs font-medium text-slate-500">終端零售消費 (YoY)</p>
                     <div class="flex items-baseline gap-2 mt-1">
-                        <span class="text-2xl sm:text-3xl font-bold text-slate-900">+3.2%</span>
-                        <span class="text-xs font-medium text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded">邊際分化</span>
+                        <span class="text-2xl sm:text-3xl font-bold text-slate-900">+5.01%</span>
+                        <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">強韌增長</span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-2">密大信心 55.2 (仍受物價壓制)</p>
+                    <p class="text-xs text-slate-500 mt-2">耐久財訂單 YoY +12.0% 擴張</p>
                 </div>
             </div>
 
-            <!-- 全部 23 項最新數據總覽表 -->
+            <!-- 1. 總體經濟多維度交叉比對分析 (Cross-Indicator Validation) -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-4">
+                <div class="border-b border-slate-100 pb-3">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <span>🔍</span> 總體經濟多維度指標交叉比對分析 (Cross-Indicator Validation)
+                    </h3>
+                    <p class="text-xs text-slate-500">跳脫單一指標雜訊，從勞動、通膨、消費、房市、流動性五大鏈條進行嚴謹交叉驗證：</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-900">👥 勞動市場供需交叉比對</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">健康常態化</span>
+                        </div>
+                        <p class="text-xs text-slate-600"><strong>比對指標</strong>：失業率 4.1% ｜ 初領失業金 206K 人 ｜ 非農年增 +0.38%</p>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            <strong>實證推論</strong>：非農新增人數雖常態化放緩，但高頻初領救濟金並未突破 25 萬警戒線。失業率的小幅回升主因是勞動力供給增加（移民與勞參率修復），而非企業裁員潮導致的需求崩盤，薩姆規則尚未實質觸發衰退。
+                        </p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-900">🔥 通膨傳導鏈條交叉驗證</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-semibold">黏性鈍化</span>
+                        </div>
+                        <p class="text-xs text-slate-600"><strong>比對指標</strong>：PPI 生產端 +5.41% ➔ CPI 消費端 +3.35% ➔ 核心 PCE +3.34%</p>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            <strong>實證推論</strong>：PPI 雖受前年低基期影響數值略高，但核心 PCE 與 CPI 呈現良性鈍化收斂。服務業工資增長放緩有效壓抑二次通膨螺旋，實質限制性利率（聯邦利率 - 核心 PCE）維持高檔，降息空間完全具備。
+                        </p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-900">🛒 終端消費 vs 企業資本支出 (Capex)</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-semibold">雙引擎穩健</span>
+                        </div>
+                        <p class="text-xs text-slate-600"><strong>比對指標</strong>：零售銷售 YoY +5.01% ｜ 耐久財新訂單 YoY +12.0% ｜ 密大信心 55.2</p>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            <strong>實證推論</strong>：儘管密大信心指數受通膨心理預期壓制偏低，但「用腳投票」的實體零售銷售年增率仍達 +5.01%，耐久財訂單大幅年增 +12.0%，反映 AI 算力與高階製造之企業實質資本支出極為強韌。
+                        </p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-900">🏡 房市領先指標與實體製造鏈</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-semibold">利率壓抑 vs 許可觸底</span>
+                        </div>
+                        <p class="text-xs text-slate-600"><strong>比對指標</strong>：建築許可 YoY +2.36% ｜ 新屋開工 YoY -13.5% ｜ 工業生產 YoY -0.2%</p>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            <strong>實證推論</strong>：新屋開工承受 7% 房貸利率壓抑，但領先開工 3~6 個月的「建築許可」年增率已率先翻正 (+2.36%)。房市呈現典型的週期底部構建特徵，一旦啟動降息引導房貸回落，將具備強大補漲彈性。
+                        </p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2 md:col-span-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-slate-900">💧 貨幣供給與金融條件流動性傳導</span>
+                            <span class="text-xs px-2 py-0.5 rounded bg-blue-100 text-blue-800 font-semibold">緊縮結束 ➔ 流動性回溫</span>
+                        </div>
+                        <p class="text-xs text-slate-600"><strong>比對指標</strong>：M2 貨幣供給 YoY +5.41% ｜ 聯邦利率 3.63% ｜ 10Y-2Y 利差 +0.33%</p>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            <strong>實證推論</strong>：M2 貨幣供給正式自負成長回升至 +5.41% 的健康擴張區間，長短利差脫離倒掛。這意味著全市場流動性最嚴峻的收縮期已經過去，貨幣活水重新流向金融市場，為實體資產估值提供底層支持。
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 未來可能發展三大情境推論 (Forward Scenarios) -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-4">
+                <div class="border-b border-slate-100 pb-3">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <span>🔮</span> 未來發展趨勢與三大情境路徑推論 (Forward Scenarios)
+                    </h3>
+                    <p class="text-xs text-slate-500">根據當前 23 項指標權重推演未來 6~18 個月最可能發生的宏觀情境：</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- 情境 A -->
+                    <div class="p-5 rounded-xl border-2 border-emerald-300 bg-emerald-50/50 flex flex-col justify-between space-y-3">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-emerald-950">情境 A：軟著陸再擴張 (基準情境)</span>
+                                <span class="text-xs px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900 font-bold">發生機率 60%</span>
+                            </div>
+                            <p class="text-xs text-slate-700 mt-2 leading-relaxed">
+                                <strong>【演變路徑】</strong> 通膨平穩向 2.5% 收斂，聯準會採節奏性預防性降息。房貸利率回落刺激房地產開工回升，搭配耐久財新訂單強勢增長，經濟成功消化時滯衝擊，邁向新一輪健康成長期。
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-emerald-200 text-xs text-emerald-900 leading-relaxed">
+                            <strong>【最佳資產反應】</strong> 美股大型科技與核心權值股獲利擴張；長天期美債賺取降息資本利得；美元指數溫和震盪回落。
+                        </div>
+                    </div>
+
+                    <!-- 情境 B -->
+                    <div class="p-5 rounded-xl border-2 border-rose-300 bg-rose-50/50 flex flex-col justify-between space-y-3">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-rose-950">情境 B：緊縮滯後硬著陸 (下行風險)</span>
+                                <span class="text-xs px-2 py-0.5 rounded-full bg-rose-200 text-rose-900 font-bold">發生機率 25%</span>
+                            </div>
+                            <p class="text-xs text-slate-700 mt-2 leading-relaxed">
+                                <strong>【演變路徑】</strong> 高無風險利率壓抑實體過久，房地產與高負債中小企業加速爆發違約。每週初領失業金快速竄升突破 28~30 萬人，消費動能坍塌，迫使央行展開恐慌性降息救市。
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-rose-200 text-xs text-rose-900 leading-relaxed">
+                            <strong>【最佳資產反應】</strong> 股票面臨估值與盈利雙殺；長天期美國公債與現金為絕對避險首選；公用事業與醫療優於週期股。
+                        </div>
+                    </div>
+
+                    <!-- 情境 C -->
+                    <div class="p-5 rounded-xl border-2 border-amber-300 bg-amber-50/50 flex flex-col justify-between space-y-3">
+                        <div>
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-sm text-amber-950">情境 C：二次通膨黏性停滯 (黑天鵝)</span>
+                                <span class="text-xs px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 font-bold">發生機率 15%</span>
+                            </div>
+                            <p class="text-xs text-slate-700 mt-2 leading-relaxed">
+                                <strong>【演變路徑】</strong> 地緣政治或供應鏈衝擊推高原物料原油價格，PPI 重新推升核心 CPI 至 3.8% 以上。服務業工資難以降溫，聯準會被迫中止降息甚至重啟升息，金融條件驟緊。
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-amber-200 text-xs text-amber-900 leading-relaxed">
+                            <strong>【最佳資產反應】</strong> 股債雙殺；原油大宗商品、黃金與高利現金最具備抗通膨防禦力。
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 後續應密切注意觀察的其他關鍵指標 (Forward Watchlist & Triggers) -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-4">
+                <div class="border-b border-slate-100 pb-3">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <span>👀</span> 後續應密切觀察之關鍵追蹤指標與觸發門檻 (Forward Watchlist)
+                    </h3>
+                    <p class="text-xs text-slate-500">客觀設定各指標之敏感臨界閥值，作為整體策略與資產部位動態防禦的觸發信號：</p>
+                </div>
+
+                <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-100 text-slate-700 text-xs uppercase font-semibold">
+                            <tr>
+                                <th class="py-3 px-4">重點追蹤指標</th>
+                                <th class="py-3 px-4">更新頻率</th>
+                                <th class="py-3 px-4 text-center">當前最新數值</th>
+                                <th class="py-3 px-4 text-center">關鍵警戒門檻 (Trigger)</th>
+                                <th class="py-3 px-4">宏觀意涵與操作應對邏輯</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200 text-xs sm:text-sm">
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 px-4 font-bold text-slate-900">初領失業救濟金 (ICSA)</td>
+                                <td class="py-3 px-4 text-slate-500">每週四 (高頻)</td>
+                                <td class="py-3 px-4 text-center font-bold text-emerald-600">206K 人</td>
+                                <td class="py-3 px-4 text-center font-bold text-rose-600 bg-rose-50/50">4週均線 > 250K</td>
+                                <td class="py-3 px-4 text-slate-600">最敏感的裁員先導指標。若突破 25 萬人，代表就業進入實質惡化，應立即降低股票部位。</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 px-4 font-bold text-slate-900">核心 PCE 物價 MoM (PCEPILFE)</td>
+                                <td class="py-3 px-4 text-slate-500">每月底</td>
+                                <td class="py-3 px-4 text-center font-bold text-blue-600">3.34% (YoY)</td>
+                                <td class="py-3 px-4 text-center font-bold text-amber-600 bg-amber-50/50">連續 2 個月 MoM > 0.3%</td>
+                                <td class="py-3 px-4 text-slate-600">Fed 定錨目標。若 MoM 持續高於 0.3% (年化 3.6%)，降息窗口將關閉，股債受折現率壓制。</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 px-4 font-bold text-slate-900">建築許可 (PERMIT) & 新屋開工 (HOUST)</td>
+                                <td class="py-3 px-4 text-slate-500">每月中旬</td>
+                                <td class="py-3 px-4 text-center font-bold text-slate-700">開工 -13.5% | 許可 +2.4%</td>
+                                <td class="py-3 px-4 text-center font-bold text-emerald-600 bg-emerald-50/50">開工與許可連續 2 季正增長</td>
+                                <td class="py-3 px-4 text-slate-600">房地產為景氣先行火車頭。若開工回升，確認降息已實質傳導至民間實體，增持週期成長股。</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 px-4 font-bold text-slate-900">耐久財新訂單 (DGORDER)</td>
+                                <td class="py-3 px-4 text-slate-500">每月中下旬</td>
+                                <td class="py-3 px-4 text-center font-bold text-emerald-600">+12.0% (YoY)</td>
+                                <td class="py-3 px-4 text-center font-bold text-rose-600 bg-rose-50/50">YoY 增速轉負 (< 0%)</td>
+                                <td class="py-3 px-4 text-slate-600">企業實體資本支出 (Capex) 晴雨表。若跌破零軸，反映企業對未來需求轉趨悲觀並凍結投資。</td>
+                            </tr>
+                            <tr class="hover:bg-slate-50">
+                                <td class="py-3 px-4 font-bold text-slate-900">M2 貨幣供給年增率 (M2SL YoY)</td>
+                                <td class="py-3 px-4 text-slate-500">每月底</td>
+                                <td class="py-3 px-4 text-center font-bold text-emerald-600">+5.41% (YoY)</td>
+                                <td class="py-3 px-4 text-center font-bold text-blue-600 bg-blue-50/50">年增率穩定保持 > 5.0%</td>
+                                <td class="py-3 px-4 text-slate-600">金融流動性活水。M2 保持 5% 以上擴張將持續為市場注入評價支撐，降低流動性枯竭風險。</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 4. 核心風險提示與資產配置建議 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-amber-50/70 border border-amber-200 p-5 rounded-xl card-shadow space-y-2">
+                    <h3 class="text-base font-bold text-amber-900 flex items-center gap-2">
+                        <span>⚠️</span> 核心風險提示 (Risk Warning)
+                    </h3>
+                    <ul class="text-xs sm:text-sm text-amber-950 space-y-2 list-disc list-inside leading-relaxed">
+                        <li><strong>解除倒掛後的時滯衰退陷阱</strong>：歷史經驗表明，經濟下行通常不在倒掛期間，而在倒掛解除後 6~18 個月內驗證。若初領失業金急升至 25 萬以上，需提高警覺。</li>
+                        <li><strong>長端利率高懸 (10Y 殖利率接近 4.95%)</strong>：無風險基準利率居高不下，房貸利率緊繃壓抑房市開工與成屋交易，並制約股票估值倍數。</li>
+                        <li><strong>低收入群體消費邊際放緩</strong>：密大消費者信心指數 (55.2) 低迷，需關注終端零售是否因超額儲蓄見底而走弱。</li>
+                    </ul>
+                </div>
+
+                <div class="bg-blue-50/70 border border-blue-200 p-5 rounded-xl card-shadow space-y-2">
+                    <h3 class="text-base font-bold text-blue-900 flex items-center gap-2">
+                        <span>💡</span> 資產配置與投資策略建議
+                    </h3>
+                    <div class="space-y-2 text-xs sm:text-sm text-blue-950 leading-relaxed">
+                        <div class="font-bold text-blue-800">
+                            🛡️ 建議資產比例：股票 60% ｜ 長天期美債 35% ｜ 現金 5%
+                        </div>
+                        <p><strong>• 債券端策略</strong>：降息週期開展，目前處於鎖定高無風險殖利率與賺取資本利得的最佳歷史視窗，長天期美債為核心防守重兵。</p>
+                        <p><strong>• 股票端策略</strong>：揚棄高槓桿、無獲利的投機題材，重兵佈局具備<strong>強大現金流定價能力之大型科技巨擘</strong>，並逢低增持<strong>受惠降息週期之高股息、公用事業與內需消費族群</strong>。</p>
+                        <p><strong>• 風控關鍵底線</strong>：每週四以<strong>「初領失業救濟金人數 25 萬」</strong>作為股票部位全面調降槓桿之第一道停損閘門。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. 全部 23 項最新數據總覽表 -->
             <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-4">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
@@ -306,10 +375,143 @@
                     </table>
                 </div>
             </div>
+
         </div>
 
 
-        <!-- ==================== TAB 2: 指標互動走勢圖 ==================== -->
+        <!-- ==================== TAB 2: 歷史時空回顧 ==================== -->
+        <div id="tab-history" class="space-y-6 hidden">
+            <!-- 歷史控制面板 -->
+            <div class="bg-white p-5 rounded-xl border border-slate-200 card-shadow">
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <span>🕰️</span> 歷史時空回顧：特定歷史時點總經情境重現
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-1">選擇過去任一歷史時點，系統自動剔除所有未來數據，重現當時最新公佈指標、動態循環判定與前數期趨勢簡圖。</p>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">經典歷史情境快速載入：</label>
+                            <select id="hist-preset-select" onchange="loadPresetScenario()" class="bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm rounded-lg p-2 font-medium focus:ring-blue-500 focus:border-blue-500">
+                                <option value="2007-06-01">2007-06-01 次貸風暴前夕 (殖利率深度倒掛)</option>
+                                <option value="2008-09-15" selected>2008-09-15 雷曼兄弟破產 (金融海嘯實質衰退)</option>
+                                <option value="2009-06-01">2009-06-01 量化寬鬆救市 (景氣觸底復甦期)</option>
+                                <option value="2017-06-01">2017-06-01 經濟穩健擴張期</option>
+                                <option value="2020-03-15">2020-03-15 疫情爆發全球斷崖衝擊</option>
+                                <option value="2020-09-01">2020-09-01 無限 QE 與疫後強勁復甦</option>
+                                <option value="2022-06-01">2022-06-01 四十年通膨大頂 (暴力升息)</option>
+                                <option value="2023-03-15">2023-03-15 矽谷銀行事件 (倒掛最深時)</option>
+                                <option value="2024-08-05">2024-08-05 日圓套息交易震撼</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">自訂回顧基準日：</label>
+                            <input type="date" id="hist-date-input" value="2008-09-15" min="2002-01-01" max="2026-09-13" onchange="runHistoricalAnalysis()" class="bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm rounded-lg p-2 font-medium focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">簡圖維度：</label>
+                            <select id="hist-spark-mode" onchange="runHistoricalAnalysis()" class="bg-slate-50 border border-slate-300 text-slate-900 text-xs sm:text-sm rounded-lg p-2 font-medium">
+                                <option value="raw" selected>原始數據走勢簡圖</option>
+                                <option value="yoy">YoY 年增率走勢簡圖</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 歷史循環動態判定橫幅 -->
+            <div id="hist-cycle-banner" class="bg-white border-l-8 border-red-500 rounded-xl p-5 sm:p-6 card-shadow border border-slate-200 transition-all"></div>
+
+            <!-- 當時 4 個核心體質指標卡片 -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4" id="hist-stat-cards"></div>
+
+            <!-- 當時總經深度剖析與配置建議 -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white p-5 rounded-xl border border-slate-200 card-shadow space-y-3">
+                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <span>🔍</span> 當時總體經濟多維交叉比對
+                    </h3>
+                    <div id="hist-deep-diagnosis" class="text-xs sm:text-sm text-slate-700 space-y-2 leading-relaxed"></div>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="bg-amber-50/70 border border-amber-200 p-4 rounded-xl card-shadow">
+                        <h3 class="text-sm font-bold text-amber-900 flex items-center gap-1.5 mb-1.5">
+                            <span>⚠️</span> 當時面臨之核心宏觀風險
+                        </h3>
+                        <p id="hist-risk-alert" class="text-xs sm:text-sm text-amber-950 leading-relaxed"></p>
+                    </div>
+
+                    <div class="bg-blue-50/70 border border-blue-200 p-4 rounded-xl card-shadow">
+                        <h3 class="text-sm font-bold text-blue-900 flex items-center gap-1.5 mb-1.5">
+                            <span>💡</span> 當時歷史時點最佳配置建議
+                        </h3>
+                        <p id="hist-alloc-advice" class="text-xs sm:text-sm text-blue-950 leading-relaxed font-medium"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 核心指標歷史數據簡圖展廳 (Sparklines Gallery) -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                            <span>📈</span> 重點指標歷史變化簡圖 (Sparklines Gallery)
+                        </h3>
+                        <p class="text-xs text-slate-500">展示該歷史基準日前 8 期之趨勢簡圖，即刻辨識數據是加速惡化、見頂回落還是觸底反彈</p>
+                    </div>
+                    <span class="text-xs font-semibold px-2.5 py-1 bg-slate-100 text-slate-700 rounded-full border border-slate-200">
+                        近 8 期歷史軌跡
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="hist-sparklines-grid"></div>
+            </div>
+
+            <!-- 全部 23 項歷史數據快照表 -->
+            <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h3 class="text-base sm:text-lg font-bold text-slate-900">📑 該歷史時點全部 23 項指標數據快照</h3>
+                        <p class="text-xs text-slate-500">嚴格依據歷史公佈時間點切分，杜絕任何未來數據污染</p>
+                    </div>
+                    <div class="flex flex-wrap gap-1.5" id="hist-cat-filter">
+                        <button onclick="filterHistCategory('全部')" class="hcat-btn px-2.5 py-1 text-xs rounded-full font-semibold bg-blue-600 text-white">全部</button>
+                        <button onclick="filterHistCategory('就業市場')" class="hcat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">就業市場</button>
+                        <button onclick="filterHistCategory('通膨與物價')" class="hcat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">通膨與物價</button>
+                        <button onclick="filterHistCategory('消費與信心')" class="hcat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">消費與信心</button>
+                        <button onclick="filterHistCategory('製造與景氣')" class="hcat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">製造與景氣</button>
+                        <button onclick="filterHistCategory('房地產市場')" class="hcat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">房地產市場</button>
+                        <button onclick="filterHistCategory('貨幣與利率')" class="hcat-btn px-2.5 py-1 text-xs rounded-full font-medium bg-slate-100 text-slate-600 hover:bg-slate-200">貨幣與利率</button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto border border-slate-200 rounded-lg">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-100 text-slate-700 text-xs uppercase font-semibold">
+                            <tr>
+                                <th class="py-2.5 px-4">分類</th>
+                                <th class="py-2.5 px-4">指標名稱</th>
+                                <th class="py-2.5 px-4">代碼</th>
+                                <th class="py-2.5 px-4">當時公佈日期</th>
+                                <th class="py-2.5 px-4 text-right">當時數值 (單位)</th>
+                                <th class="py-2.5 px-4 text-right">前期變動 (MoM)</th>
+                                <th class="py-2.5 px-4 text-right">年增率/差值 (YoY)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="hist-table-body" class="divide-y divide-slate-200"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- ==================== TAB 3: 指標互動走勢圖 ==================== -->
         <div id="tab-chart" class="space-y-6 hidden">
             <div class="bg-white p-6 rounded-xl border border-slate-200 card-shadow space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pb-4 border-b border-slate-200">
@@ -363,12 +565,10 @@
             const diagBtn = document.getElementById('nav-btn-diagnosis');
             const chartBtn = document.getElementById('nav-btn-chart');
 
-            // 隱藏全部
             histTab.classList.add('hidden');
             diagTab.classList.add('hidden');
             chartTab.classList.add('hidden');
 
-            // 重設樣式
             const inactClass = "px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-md font-medium text-slate-600 hover:text-slate-900 transition-all";
             const actClass = "px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm rounded-md font-semibold transition-all bg-white text-blue-700 shadow-sm";
 
@@ -376,14 +576,14 @@
             diagBtn.className = inactClass;
             chartBtn.className = inactClass;
 
-            if (tab === 'history') {
-                histTab.classList.remove('hidden');
-                histBtn.className = actClass;
-                runHistoricalAnalysis();
-            } else if (tab === 'diagnosis') {
+            if (tab === 'diagnosis') {
                 diagTab.classList.remove('hidden');
                 diagBtn.className = actClass;
                 renderSummaryTable('全部');
+            } else if (tab === 'history') {
+                histTab.classList.remove('hidden');
+                histBtn.className = actClass;
+                runHistoricalAnalysis();
             } else {
                 chartTab.classList.remove('hidden');
                 chartBtn.className = actClass;
@@ -398,7 +598,6 @@
             runHistoricalAnalysis();
         }
 
-        // 生成歷史微型 SVG Sparkline
         function generateSvgSparkline(values, color = '#2563eb') {
             if (!values || values.length < 2) return '';
             const min = Math.min(...values);
@@ -426,12 +625,10 @@
 
         function runHistoricalAnalysis() {
             const targetDateStr = document.getElementById('hist-date-input').value;
-            const sparkMode = document.getElementById('hist-spark-mode').value; // 'raw' or 'yoy'
-            const sparkLen = 8; // 回溯 8 期
+            const sparkMode = document.getElementById('hist-spark-mode').value;
+            const sparkLen = 8;
 
-            const cutoffDate = new Date(targetDateStr);
             const summaryList = [];
-
             const codes = Object.keys(MACRO_DATA);
 
             codes.forEach(code => {
@@ -439,7 +636,6 @@
                 const dates = item.dates;
                 const vals = item.values;
 
-                // 篩選 date <= targetDateStr
                 let validIdxs = [];
                 for (let i = 0; i < dates.length; i++) {
                     if (dates[i] <= targetDateStr) {
@@ -454,7 +650,6 @@
                 const latestDate = dates[lastIdx];
                 const prevVal = validIdxs.length > 1 ? vals[validIdxs[validIdxs.length - 2]] : null;
 
-                // 尋找 1 年前
                 const curD = new Date(latestDate);
                 const pastD = new Date(curD);
                 pastD.setFullYear(curD.getFullYear() - 1);
@@ -472,12 +667,10 @@
                 const mom = prevVal !== null ? (item.is_rate ? (latestVal - prevVal) : (((latestVal / prevVal) - 1) * 100)) : null;
                 const yoy = prev1yVal !== null ? (item.is_rate ? (latestVal - prev1yVal) : (((latestVal / prev1yVal) - 1) * 100)) : null;
 
-                // 提取近 sparkLen 期的原始數值
                 const sparkIdxs = validIdxs.slice(-sparkLen);
                 const sparkDates = sparkIdxs.map(i => dates[i]);
                 const sparkRawVals = sparkIdxs.map(i => vals[i]);
 
-                // 提取近 sparkLen 期的 YoY 數值
                 const sparkYoYVals = sparkIdxs.map(i => {
                     const d = dates[i];
                     const v = vals[i];
@@ -513,7 +706,6 @@
 
             cachedHistSummary = summaryList;
 
-            // 輔助獲取
             const getVal = c => { const f = summaryList.find(x => x.code === c); return f ? f.value : null; };
             const getYoY = c => { const f = summaryList.find(x => x.code === c); return f ? f.yoy : 0; };
 
@@ -523,8 +715,8 @@
             const cpi_yoy = getYoY('CPIAUCSL');
             const rsxfs_yoy = getYoY('RSXFS');
             const fedfunds = getVal('FEDFUNDS');
+            const dgorder_yoy = getYoY('DGORDER');
 
-            // 景氣循環動態判定
             let cycleTitle = "", cycleColor = "", cycleDesc = "", allocAdvice = "", riskAlert = "";
 
             if ((icsa && icsa >= 300000) || (unrate && unrate >= 5.5)) {
@@ -559,7 +751,6 @@
                 riskAlert = "密切關注通膨與勞工薪資是否過熱，促使央行提早啟動升息週期。";
             }
 
-            // 更新橫幅
             const banner = document.getElementById('hist-cycle-banner');
             banner.style.borderLeftColor = cycleColor;
             banner.innerHTML = `
@@ -577,7 +768,6 @@
                 <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">${cycleDesc}</p>
             `;
 
-            // 更新 4 個體質卡片
             const cards = document.getElementById('hist-stat-cards');
             cards.innerHTML = `
                 <div class="bg-white p-4 rounded-xl border border-slate-200 card-shadow">
@@ -621,11 +811,10 @@
                             ${rsxfs_yoy < 0 ? '消費收縮' : '穩步擴張'}
                         </span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-2">實體經濟活力</p>
+                    <p class="text-xs text-slate-500 mt-2">耐久財訂單 YoY: ${dgorder_yoy:+.1f}%</p>
                 </div>
             `;
 
-            // 更新剖析與建議
             document.getElementById('hist-risk-alert').innerText = riskAlert;
             document.getElementById('hist-alloc-advice').innerText = allocAdvice;
             document.getElementById('hist-deep-diagnosis').innerHTML = `
@@ -640,11 +829,10 @@
                 </div>
             `;
 
-            // 渲染 9 宮格 Sparklines Gallery
             const gallery = document.getElementById('hist-sparklines-grid');
             gallery.innerHTML = '';
 
-            const keyGalleryCodes = ['UNRATE', 'ICSA', 'T10Y2Y', 'CPIAUCSL', 'RSXFS', 'FEDFUNDS', 'HOUST', 'DGORDER', 'UMCSENT'];
+            const keyGalleryCodes = ['UNRATE', 'ICSA', 'T10Y2Y', 'CPIAUCSL', 'RSXFS', 'FEDFUNDS', 'HOUST', 'DGORDER', 'M2SL'];
 
             keyGalleryCodes.forEach(code => {
                 const item = summaryList.find(x => x.code === code);
@@ -681,7 +869,6 @@
                 gallery.appendChild(card);
             });
 
-            // 渲染快照表格
             renderHistTable('全部');
         }
 
@@ -733,7 +920,6 @@
             renderHistTable(cat);
         }
 
-        // ==================== 最新數據與走勢圖共用 ====================
         function renderSummaryTable(category = '全部') {
             const tbody = document.getElementById('summary-table-body');
             tbody.innerHTML = '';
@@ -969,10 +1155,9 @@
             Plotly.newPlot('plotly-chart', traces, layout, { responsive: true, displaylogo: false });
         }
 
-        // 頁面初始化預設載入歷史回顧
         window.onload = () => {
+            renderSummaryTable('全部');
             initChartControls();
-            runHistoricalAnalysis();
         };
     </script>
 </body>

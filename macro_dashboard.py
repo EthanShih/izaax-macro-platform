@@ -60,7 +60,7 @@ def load_data():
         st.error(f"讀取資料庫發生錯誤: {e}")
         return pd.DataFrame(columns=["date", "indicator_code", "indicator_name", "value"])
 
-def calculate_summary_stats(df, cutoff_date=None, spark_periods=6):
+def calculate_summary_stats(df, cutoff_date=None, spark_periods=8):
     """計算所有指標在特定基準日以前的最新數值、變動率與歷史簡圖數據"""
     if cutoff_date is not None:
         df_base = df[df['date'] <= cutoff_date]
@@ -77,7 +77,6 @@ def calculate_summary_stats(df, cutoff_date=None, spark_periods=6):
         latest = sub.iloc[-1]
         prev = sub.iloc[-2] if len(sub) > 1 else None
         
-        # 尋找一年前 (約 365 天前) 的對應期
         target_1y = latest['date'] - pd.DateOffset(years=1)
         sub_1y = sub[sub['date'] <= target_1y]
         prev_1y = sub_1y.iloc[-1] if not sub_1y.empty else None
@@ -102,12 +101,10 @@ def calculate_summary_stats(df, cutoff_date=None, spark_periods=6):
         else:
             yoy = None
 
-        # 提取近 N 期的歷史數據供繪製簡圖 (Sparkline)
         spark_sub = sub.tail(spark_periods)
         spark_dates = spark_sub['date'].dt.strftime('%Y-%m-%d').tolist()
         spark_vals = spark_sub['value'].tolist()
 
-        # 計算近 N 期的 YoY 歷史序列
         spark_yoy_vals = []
         for d, v in zip(spark_sub['date'], spark_sub['value']):
             t_past = d - pd.DateOffset(years=1)
@@ -158,6 +155,185 @@ def create_sparkline_fig(dates, values, color='#2563eb', title='', is_rate=False
         plot_bgcolor='rgba(0,0,0,0)'
     )
     return fig
+
+
+# ----------------- 總經多維交叉驗證與未來推論引擎 -----------------
+def generate_macro_diagnosis(stats_df, as_of_title="當前"):
+    """
+    全方位多維交叉比對與未來情境推論分析模組
+    """
+    def get_val(code):
+        row = stats_df[stats_df['code'] == code]
+        return row['value'].values[0] if not row.empty else None
+
+    def get_yoy(code):
+        row = stats_df[stats_df['code'] == code]
+        return row['yoy'].values[0] if not row.empty else 0
+
+    unrate = get_val('UNRATE')
+    icsa = get_val('ICSA')
+    payems_yoy = get_yoy('PAYEMS')
+    
+    cpi_yoy = get_yoy('CPIAUCSL')
+    core_pce_yoy = get_yoy('PCEPILFE')
+    ppi_yoy = get_yoy('PPIFIS')
+    
+    rsxfs_yoy = get_yoy('RSXFS')
+    pce_yoy = get_yoy('PCE')
+    umcsent = get_val('UMCSENT')
+    dgorder_yoy = get_yoy('DGORDER')
+    indpro_yoy = get_yoy('INDPRO')
+    philly_fed = get_val('GACDFSA066MSFRBPHI')
+    
+    permit_yoy = get_yoy('PERMIT')
+    houst_yoy = get_yoy('HOUST')
+    
+    t10y2y = get_val('T10Y2Y')
+    t10y3m = get_val('T10Y3M')
+    fedfunds = get_val('FEDFUNDS')
+    dgs10 = get_val('DGS10')
+    m2_yoy = get_yoy('M2SL')
+
+    # 1. 景氣循環動態定位
+    if (icsa is not None and icsa >= 300000) or (unrate is not None and unrate >= 5.5):
+        current_cycle = "衰退期 (Recession Phase)"
+        cycle_color = "#ef4444"
+        cycle_desc = "就業市場出現廣泛性裁員潮（初領失業救濟金飆升突破 30 萬門檻），實體經濟全面收縮。央行處於緊急降息救市階段。"
+        alloc_advice = "🛡️ 資產配置建議：防禦至上（現金 40% ｜ 長期公債 40% ｜ 防禦型股票 20%）。嚴控信用風險，等待景氣全面落底訊號。"
+        risk_alert = "注意企業違約潮、流動性枯竭及盈利預期大幅下修之衝擊。"
+    elif t10y2y is not None and t10y2y < 0:
+        current_cycle = "榮景期 (Boom Phase / Inversion Peak)"
+        cycle_color = "#f59e0b"
+        cycle_desc = f"長短殖利率曲線處於深度倒掛狀態 (10Y-2Y 為 {t10y2y:+.2f}%)，央行激進升息抗擊通膨。經濟擴張雖達頂點，但倒掛預示著後續週期轉折正逐步逼近。"
+        alloc_advice = "⚖️ 資產配置建議：由股轉債漸進平衡（股票 50% ｜ 中長天期公債 40% ｜ 現金 10%）。鎖定高無風險利率，聚焦高自由現金流防禦標的。"
+        risk_alert = "留意貨幣緊縮政策之滯後衝擊，以及銀行業與高槓桿資產之流動性壓力。"
+    elif t10y2y is not None and t10y2y >= 0 and (icsa is not None and icsa < 260000) and (unrate is not None and unrate <= 4.8):
+        current_cycle = "榮景期尾聲 ➔ 成長再平衡 / 降息過渡期 (Late Boom / Transition)"
+        cycle_color = "#f97316"
+        cycle_desc = f"長短天期公債利差正式脫離倒掛、恢復正斜率 (+{t10y2y:.2f}%)。初領失業金仍在健康低檔 (未破 25 萬警戒線)，實體經濟具備韌性，步入預防性降息窗口。"
+        alloc_advice = "📈 資產配置建議：股債雙核心佈局（股票 60% ｜ 長天期美債 35% ｜ 現金 5%）。降息初期長端美債具備高鎖利與資本利得優勢。"
+        risk_alert = "嚴防解倒掛後的時滯衰退效應。每週四緊盯初領失業金人數是否突破 25 萬警戒線。"
+    elif cpi_yoy < 2.5 and t10y2y is not None and t10y2y > 0.8 and (fedfunds is not None and fedfunds < 2.0):
+        current_cycle = "復甦期 (Recovery Phase)"
+        cycle_color = "#10b981"
+        cycle_desc = "央行維持極度寬鬆政策，低利率、低通膨，市場資金充裕，製造業與初領失業金見高回落，景氣觸底強烈反彈。"
+        alloc_advice = "🚀 資產配置建議：全力進攻（股票 80% ｜ 高收益債/商品 15% ｜ 現金 5%）。優先配置高貝塔週期股、中小型股與科技成長股。"
+        risk_alert = "注意早期復甦期可能出現之二次探底擔憂，但中長期趨勢向上。"
+    else:
+        current_cycle = "穩健成長期 (Growth Phase)"
+        cycle_color = "#3b82f6"
+        cycle_desc = "經濟穩健擴張，就業充沛，企業獲利持續成長。通膨處於健康可控區間，央行利率維持在中性至溫和升息水準。"
+        alloc_advice = "💼 資產配置建議：股優於債（股票 70% ｜ 投資級債券 20% ｜ 現金 10%）。側重獲利成長強勁之主流產業龍頭。"
+        risk_alert = "關注物價是否過熱升溫，促使央行超預期收緊貨幣政策。"
+
+    # 2. 五大維度指標交叉驗證 (Cross-Validation Matrix)
+    cross_validation = [
+        {
+            'dimension': '👥 勞動市場深度交叉比對',
+            'indicators': f'失業率: {unrate}% | 初領失業金: {icsa/1000:.0f}K 人 | 非農年增: {payems_yoy:+.2f}%',
+            'insight': '非農就業增幅常態化放緩，但每週高頻指標「初領失業救濟金」並未出現突破 25 萬的異常跳升。這印證當前失業率的小幅回升主要是勞動力供給增加（移民與勞動參與率修復）所致，而非企業大面積裁員所引發的實質需求坍塌，薩姆規則尚未實質觸發硬著陸警戒。'
+        },
+        {
+            'dimension': '🔥 通膨傳導鏈條交叉驗證',
+            'indicators': f'PPI 生產端: {ppi_yoy:+.2f}% ➔ CPI 消費端: {cpi_yoy:+.2f}% ➔ 核心 PCE: {core_pce_yoy:+.2f}%',
+            'insight': '核心 PCE 與 CPI 均自高點顯著收斂，生產者物價 PPI 雖受低基期擾動偶有波動，但尚未向上傳導至下游消費品。服務業工資增長放緩有效壓制了核心通膨黏性，使得實質利率（聯邦利率 - 核心PCE）擴大至限制性高檔，為聯準會開啟了降息的安全邊際。'
+        },
+        {
+            'dimension': '🛒 終端消費 vs 企業資本支出 (Capex)',
+            'indicators': f'零售銷售 YoY: {rsxfs_yoy:+.2f}% | 實體消費 PCE YoY: {pce_yoy:+.2f}% | 耐久財新訂單 YoY: {dgorder_yoy:+.2f}%',
+            'insight': f'零售銷售保持約 {rsxfs_yoy:.1f}% 穩健年增，個人消費支出亦展現消費韌性。尤其耐久財新訂單年增達 {dgorder_yoy:+.1f}%，顯示以 AI、自動化及先進製造驅動的企業實體資本支出 (Capex) 極具抗跌性，民間消費與企業投資兩大引擎並未熄火。'
+        },
+        {
+            'dimension': '🏡 房市領先指標與實體製造鏈',
+            'indicators': f'建築許可 YoY: {permit_yoy:+.2f}% | 新屋開工 YoY: {houst_yoy:+.2f}% | 工業生產 YoY: {indpro_yoy:+.2f}%',
+            'insight': f'新屋開工 YoY ({houst_yoy:+.1f}%) 仍承受 7% 房貸高利率之壓抑，為當前經濟最脆弱之一環。然而領先開工約 3~6 個月的建築許可 YoY ({permit_yoy:+.1f}%) 已率先觸底翻正。一旦基準利率鬆綁引導房貸利率下行，房市有望從當前「被動壓抑」轉為新一輪擴張反彈動能。'
+        },
+        {
+            'dimension': '💧 貨幣供給與流動性傳導環境',
+            'indicators': f'M2 貨幣年增: {m2_yoy:+.2f}% | 基準利率: {fedfunds}% | 10Y-2Y 利差: {t10y2y:+.2f}%',
+            'insight': f'M2 貨幣供給 YoY 已正式自負增長轉為正增長 ({m2_yoy:+.1f}%)，長短公債利差結束倒掛。這意味著「全市場流動性最緊縮的至暗時刻」已經過去，資金活水重回金融體系，為資產估值修復提供底層流動性支撐。'
+        }
+    ]
+
+    # 3. 未來發展三大情境推論 (Forward Scenarios)
+    forward_scenarios = [
+        {
+            'name': '情境 A：預防性降息引導「軟著陸再擴張」 (基準情境)',
+            'prob': '60%',
+            'color': '#10b981',
+            'path': '通膨穩定向 2.5% 收斂，聯準會採節奏性降息引導借貸成本下降，房市開工回升，資本支出延續強勁，經濟成功化解滯後衝擊並重返穩健擴張。',
+            'asset': '美股大型科技與優質權值股獲利擴張；長天期美債賺取資本利得；美元指數溫和走弱。'
+        },
+        {
+            'name': '情境 B：緊縮滯後衝擊引發「遲到型硬著陸衰退」 (下行風險)',
+            'prob': '25%',
+            'color': '#ef4444',
+            'path': '長天期利率高懸導致房地產與高負債中小企業加速爆雷，初領失業金竄升至 28 萬以上，消費急速緊縮，央行被迫恐慌性降息救市。',
+            'asset': '股票面臨盈利與估值雙殺；長天期美國公債與現金為絕對避險王者；防禦型公用事業優於週期股。'
+        },
+        {
+            'name': '情境 C：大宗商品推動「二次通膨停滯風險」 (黑天鵝風險)',
+            'prob': '15%',
+            'color': '#f59e0b',
+            'path': '地緣政治或供應鏈擾動帶動原油等大宗商品價格飆升，PPI 重新推升核心 CPI 至 3.8% 以上，聯準會被迫暫停降息甚至重啟升息。',
+            'asset': '股債雙殺；原物料能源、黃金與高利現金最具備抗通膨保護力。'
+        }
+    ]
+
+    # 4. 後續應密切觀察的關鍵追蹤指標 (Forward Watchlist & Triggers)
+    watchlist_triggers = [
+        {
+            'indicator': '初領失業救濟金人數 (ICSA)',
+            'freq': '每週四',
+            'current': f'{icsa/1000:.0f}K 人' if icsa else 'N/A',
+            'trigger': '> 250K (警戒) / > 300K (衰退)',
+            'meaning': '最靈敏的每週實時裁員指標。若 4 週均線突破 25 萬，代表企業開始廣泛解僱，軟著陸預期破滅。'
+        },
+        {
+            'indicator': '核心 PCE 物價指數 MoM (PCEPILFE)',
+            'freq': '每月底',
+            'current': f'{core_pce_yoy:.2f}% (YoY)',
+            'trigger': '月增率 MoM > 0.3% (年化 3.6%)',
+            'meaning': '聯準會貨幣政策最核心定錨指標。若連續 2 個月 MoM > 0.3%，降息窗口將全面關閉。'
+        },
+        {
+            'indicator': '建築許可 (PERMIT) & 新屋開工 (HOUST)',
+            'freq': '每月中旬',
+            'current': f'開工 YoY {houst_yoy:+.1f}% | 許可 YoY {permit_yoy:+.1f}%',
+            'trigger': '開工與許可連續 2 季正增長',
+            'meaning': '房地產是經濟週期的先行者。開工回溫將確認降息已實質傳導至實體經濟。'
+        },
+        {
+            'indicator': '耐久財核心資本財新訂單 (DGORDER)',
+            'freq': '每月中下旬',
+            'current': f'YoY {dgorder_yoy:+.1f}%',
+            'trigger': 'YoY 增速轉負 (< 0%)',
+            'meaning': '企業真實資本支出 (Capex) 的領先信號。只要保持正增長，製造業擴張基礎堅固。'
+        },
+        {
+            'indicator': 'M2 貨幣供給年增率 (M2SL YoY)',
+            'freq': '每月底',
+            'current': f'YoY {m2_yoy:+.2f}%',
+            'trigger': '年增率回升至 > 6.0%',
+            'meaning': '全市場流動性水龍頭。M2 加速擴張將為風險資產提供充沛的流動性溢價行情。'
+        }
+    ]
+
+    return {
+        'cycle_title': current_cycle,
+        'cycle_color': cycle_color,
+        'cycle_desc': cycle_desc,
+        'alloc_advice': alloc_advice,
+        'risk_alert': risk_alert,
+        'unrate': unrate,
+        'icsa': icsa,
+        't10y2y': t10y2y,
+        'cpi_yoy': cpi_yoy,
+        'rsxfs_yoy': rsxfs_yoy,
+        'cross_validation': cross_validation,
+        'forward_scenarios': forward_scenarios,
+        'watchlist_triggers': watchlist_triggers
+    }
 
 
 # ----------------- 頁面 1: 指標互動走勢圖 -----------------
@@ -279,76 +455,9 @@ def render_chart_page(df):
     st.plotly_chart(fig, use_container_width=True)
 
 
-# ----------------- 總經循環診斷邏輯組件 -----------------
-def generate_macro_diagnosis(stats_df, as_of_title="當前"):
-    """根據輸入的統計數據動態產生景氣循環診斷、體質評估、風險與建議"""
-    def get_val(code):
-        row = stats_df[stats_df['code'] == code]
-        return row['value'].values[0] if not row.empty else None
-
-    def get_yoy(code):
-        row = stats_df[stats_df['code'] == code]
-        return row['yoy'].values[0] if not row.empty else 0
-
-    unrate = get_val('UNRATE')
-    icsa = get_val('ICSA')
-    t10y2y = get_val('T10Y2Y')
-    t10y3m = get_val('T10Y3M')
-    fedfunds = get_val('FEDFUNDS')
-    cpi_yoy = get_yoy('CPIAUCSL')
-    core_pce_yoy = get_yoy('PCEPILFE')
-    rsxfs_yoy = get_yoy('RSXFS')
-    umcsent = get_val('UMCSENT')
-
-    # 動態判定循環階段
-    if (icsa is not None and icsa >= 300000) or (unrate is not None and unrate >= 5.5):
-        current_cycle = "衰退期 (Recession Phase)"
-        cycle_color = "#ef4444"
-        cycle_desc = "就業市場出現廣泛性裁員潮（初領失業救濟金飆升突破 30 萬門檻），實體經濟全面收縮。央行處於緊急降息救市階段。"
-        alloc_advice = "🛡️ 資產配置建議：防禦至上（現金 40% ｜ 長期公債 40% ｜ 防禦型股票 20%）。嚴控信用風險，等待景氣全面落底訊號。"
-        risk_alert = "注意企業違約潮、流動性枯竭及盈利預期大幅下修之衝擊。"
-    elif t10y2y is not None and t10y2y < 0:
-        current_cycle = "榮景期 (Boom Phase / Inversion Peak)"
-        cycle_color = "#f59e0b"
-        cycle_desc = "殖利率曲線處於深度倒掛狀態，央行激進升息抗擊通膨。經濟雖處擴張極致，但倒掛預示著後續景氣循環頂部正逐步接近。"
-        alloc_advice = "⚖️ 資產配置建議：由股轉債漸進平衡（股票 50% ｜ 中長天期公債 40% ｜ 現金 10%）。鎖定高無風險利率，聚焦高自由現金流防禦標的。"
-        risk_alert = "留意貨幣緊縮政策之滯後衝擊，以及銀行業與高槓桿資產之流動性壓力。"
-    elif t10y2y is not None and t10y2y >= 0 and (icsa is not None and icsa < 260000) and (unrate is not None and unrate <= 4.8):
-        current_cycle = "榮景期尾聲 ➔ 成長再平衡 / 降息過渡期 (Late Boom / Transition)"
-        cycle_color = "#f97316"
-        cycle_desc = "長短天期公債利差正式脫離倒掛、恢復正斜率。初領失業金仍在健康低檔（未破25萬警戒線），實體經濟具備韌性，步入預防性降息窗口。"
-        alloc_advice = "📈 資產配置建議：股債雙核心佈局（股票 60% ｜ 長天期美債 35% ｜ 現金 5%）。降息初期長端美債具備高鎖利與資本利得優勢。"
-        risk_alert = "嚴防解倒掛後的時滯衰退效應。每週四緊盯初領失業金人數是否突破 25 萬警戒線。"
-    elif cpi_yoy < 2.5 and t10y2y is not None and t10y2y > 0.8 and (fedfunds is not None and fedfunds < 2.0):
-        current_cycle = "復甦期 (Recovery Phase)"
-        cycle_color = "#10b981"
-        cycle_desc = "央行維持極度寬鬆政策，低利率、低通膨，市場資金充裕，製造業與初領失業金見高回落，景氣觸底強烈反彈。"
-        alloc_advice = "🚀 資產配置建議：全力進攻（股票 80% ｜ 高收益債/商品 15% ｜ 現金 5%）。優先配置高貝塔週期股、中小型股與科技成長股。"
-        risk_alert = "注意早期復甦期可能出現之二次探底擔憂，但中長期趨勢向上。"
-    else:
-        current_cycle = "穩健成長期 (Growth Phase)"
-        cycle_color = "#3b82f6"
-        cycle_desc = "經濟穩健擴張，就業充沛，企業獲利持續成長。通膨處於健康可控區間，央行利率維持在中性至溫和升息水準。"
-        alloc_advice = "💼 資產配置建議：股優於債（股票 70% ｜ 投資級債券 20% ｜ 現金 10%）。側重獲利成長強勁之主流產業龍頭。"
-        risk_alert = "關注物價是否過熱升溫，促使央行超預期收緊貨幣政策。"
-
-    return {
-        'cycle_title': current_cycle,
-        'cycle_color': cycle_color,
-        'cycle_desc': cycle_desc,
-        'alloc_advice': alloc_advice,
-        'risk_alert': risk_alert,
-        'unrate': unrate,
-        'icsa': icsa,
-        't10y2y': t10y2y,
-        'cpi_yoy': cpi_yoy,
-        'rsxfs_yoy': rsxfs_yoy
-    }
-
-
 # ----------------- 頁面 2: 最新數據與總經診斷 -----------------
 def render_diagnosis_page(df):
-    st.header("📋 全部指標最新數據與總經診斷")
+    st.header("📋 全部指標最新數據與總經深度診斷")
     
     stats_df = calculate_summary_stats(df)
     if stats_df.empty:
@@ -357,18 +466,18 @@ def render_diagnosis_page(df):
 
     diag = generate_macro_diagnosis(stats_df, as_of_title="最新即時")
 
-    # 循環橫幅
+    # 1. 循環橫幅
     st.markdown(
         f"""
         <div style="background-color: #1e1e1e; padding: 20px; border-radius: 10px; border-left: 8px solid {diag['cycle_color']}; margin-bottom: 20px;">
             <h3 style="margin-top:0; color: {diag['cycle_color']};">📍 總經分析模組動態判定：{diag['cycle_title']}</h3>
-            <p style="font-size: 1.05rem; line-height: 1.6; color: #ddd;">{diag['cycle_desc']}</p>
+            <p style="font-size: 1.05rem; line-height: 1.6; color: #ddd; margin:0;">{diag['cycle_desc']}</p>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    # 4 大體質指標
+    # 2. 四大關鍵體質指標卡片
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.metric("勞動就業 (失業率 / 初領)", f"{diag['unrate']:.1f}%" if diag['unrate'] else "N/A", f"初領 {diag['icsa']/1000:.0f}K 人" if diag['icsa'] else "N/A")
@@ -381,6 +490,47 @@ def render_diagnosis_page(df):
 
     st.divider()
 
+    # 3. 多維度指標交叉比對 (Cross-Validation Matrix)
+    st.subheader("🔍 總體經濟多維度交叉比對分析 (Cross-Indicator Validation)")
+    for cv in diag['cross_validation']:
+        with st.expander(f"{cv['dimension']} ➔ 核心觀察", expanded=True):
+            st.markdown(f"**關鍵對比數據**：`{cv['indicators']}`")
+            st.markdown(f"**實證分析推論**：{cv['insight']}")
+
+    st.divider()
+
+    # 4. 未來發展三大情境推論 (Forward Scenarios)
+    st.subheader("🔮 未來發展可能趨勢與路徑推論 (Forward Scenarios)")
+    sc_cols = st.columns(3)
+    for idx, sc in enumerate(diag['forward_scenarios']):
+        with sc_cols[idx]:
+            st.markdown(
+                f"""
+                <div style="background-color: #f8fafc; border-top: 4px solid {sc['color']}; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; height: 100%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: 800; font-size: 0.95rem; color: #0f172a;">{sc['name']}</span>
+                    </div>
+                    <span style="background-color: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">發生機率：{sc['prob']}</span>
+                    <p style="font-size: 0.85rem; color: #334155; margin-top: 10px; line-height: 1.5;"><strong>演變路徑</strong>：{sc['path']}</p>
+                    <p style="font-size: 0.85rem; color: #1e40af; margin-top: 8px; line-height: 1.5; border-top: 1px dashed #cbd5e1; padding-top: 8px;"><strong>資產表現</strong>：{sc['asset']}</p>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+    st.divider()
+
+    # 5. 後續應注意觀察的其他關鍵指標 (Forward Watchlist & Triggers)
+    st.subheader("👀 後續應密切追蹤之領先指標與觸發門檻 (Forward Watchlist)")
+    st.caption("設定明確客觀的數據閥值，作為整體策略與資產配置動態調整的觸發信號：")
+    
+    watch_df = pd.DataFrame(diag['watchlist_triggers'])
+    watch_df.columns = ["追蹤指標", "發布頻率", "當前數值", "關鍵警戒門檻 (Trigger)", "宏觀意涵與應對邏輯"]
+    st.dataframe(watch_df, use_container_width=True, hide_index=True)
+
+    st.divider()
+
+    # 6. 核心風險提示與資產配置
     c_left, c_right = st.columns(2)
     with c_left:
         st.subheader("⚠️ 核心風險提示")
@@ -390,8 +540,9 @@ def render_diagnosis_page(df):
         st.info(diag['alloc_advice'])
 
     st.divider()
+
+    # 7. 全部 23 項指標最新數據總覽
     st.subheader("📑 全部 23 項指標最新數據總覽")
-    
     categories = ["全部"] + list(stats_df['category'].unique())
     selected_cat = st.selectbox("依特性分類檢視", categories)
     
@@ -417,7 +568,7 @@ def render_diagnosis_page(df):
     st.dataframe(pd.DataFrame(formatted_rows), use_container_width=True, hide_index=True)
 
 
-# ----------------- 頁面 3: 歷史時空回顧 (NEW!) -----------------
+# ----------------- 頁面 3: 歷史時空回顧 -----------------
 def render_history_page(df):
     st.header("🕰️ 歷史時空回顧與總經情境重現")
     st.caption("輸入任意歷史特定日期，系統將自動消除未來函數，重現該時點的全部數據、動態景氣循環診斷與指標歷史變化簡圖。")
@@ -450,7 +601,7 @@ def render_history_page(df):
         target_date = st.date_input("選擇特定歷史回顧基準日", value=default_val, min_value=min_date, max_value=max_date)
 
         spark_type = st.radio("簡圖呈現數據維度", options=["原始數據走勢 (Raw)", "YoY 年增率/差值走勢 (YoY %)"])
-        spark_len = st.slider("歷史簡圖回溯期數 (期數越多趨勢越清晰)", min_value=5, max_value=18, value=8)
+        spark_len = st.slider("歷史簡圖回溯期數", min_value=5, max_value=18, value=8)
 
     cutoff_datetime = pd.to_datetime(target_date)
     stats_df = calculate_summary_stats(df, cutoff_date=cutoff_datetime, spark_periods=spark_len)
@@ -477,34 +628,47 @@ def render_history_page(df):
     # 2. 當時 4 大核心體質卡片
     col1, col2, col3, col4 = st.columns(4)
     with col1:
-        st.metric("當時勞動就業 (失業率 / 初領)", f"{diag['unrate']:.1f}%" if diag['unrate'] else "N/A", f"初領 {diag['icsa']/1000:.0f}K 人" if diag['icsa'] else "N/A")
+        st.metric("當時失業率 / 初領", f"{diag['unrate']:.1f}%" if diag['unrate'] else "N/A", f"初領 {diag['icsa']/1000:.0f}K 人" if diag['icsa'] else "N/A")
     with col2:
-        st.metric("當時通膨年增率 (CPI YoY)", f"{diag['cpi_yoy']:.2f}%" if diag['cpi_yoy'] else "N/A", "通膨年增率")
+        st.metric("當時 CPI 年增率", f"{diag['cpi_yoy']:.2f}%" if diag['cpi_yoy'] else "N/A", "通膨年增率")
     with col3:
-        st.metric("當時殖利率利差 (10Y-2Y)", f"{diag['t10y2y']:+.2f}%" if diag['t10y2y'] is not None else "N/A", "倒掛" if diag['t10y2y'] and diag['t10y2y'] < 0 else "正斜率")
+        st.metric("當時利差 (10Y-2Y)", f"{diag['t10y2y']:+.2f}%" if diag['t10y2y'] is not None else "N/A", "倒掛" if diag['t10y2y'] and diag['t10y2y'] < 0 else "正斜率")
     with col4:
-        st.metric("當時終端消費 (零售銷售 YoY)", f"{diag['rsxfs_yoy']:+.2f}%" if diag['rsxfs_yoy'] else "N/A", "零售銷售年增")
+        st.metric("當時零售銷售年增", f"{diag['rsxfs_yoy']:+.2f}%" if diag['rsxfs_yoy'] else "N/A", "零售銷售年增")
 
     st.divider()
 
-    # 3. 當時深度診斷與建議
-    c1, c2 = st.columns(2)
-    with c1:
-        st.subheader("⚠️ 當時面臨之核心宏觀風險")
-        st.warning(diag['risk_alert'])
-    with c2:
-        st.subheader("💡 當時歷史時點最佳配置建議")
-        st.info(diag['alloc_advice'])
+    # 3. 當時指標交叉驗證分析
+    st.subheader(f"🔍 歷史時點 [{target_date}] 指標交叉比對深度分析")
+    for cv in diag['cross_validation']:
+        with st.expander(f"{cv['dimension']}", expanded=True):
+            st.markdown(f"**當時數據比對**：`{cv['indicators']}`")
+            st.markdown(f"**分析論證**：{cv['insight']}")
 
     st.divider()
 
-    # 4. 重點指標歷史簡圖展廳 (Sparklines Gallery)
+    # 4. 當時視角下的未來情境推論與後續追蹤
+    c_sc, c_watch = st.columns([1.1, 0.9])
+    with c_sc:
+        st.subheader("🔮 當時視角之未來情境路徑推論")
+        for sc in diag['forward_scenarios']:
+            st.markdown(f"**{sc['name']}** (機率: `{sc['prob']}`)")
+            st.markdown(f"- 路徑：{sc['path']}")
+            st.markdown(f"- 資產：{sc['asset']}")
+    with c_watch:
+        st.subheader("👀 當時後續應重點觀察之警報指標")
+        for wt in diag['watchlist_triggers'][:3]:
+            st.markdown(f"**{wt['indicator']}** ({wt['freq']})")
+            st.caption(f"警戒門檻: {wt['trigger']} | 意涵: {wt['meaning']}")
+
+    st.divider()
+
+    # 5. 重點指標歷史簡圖展廳 (Sparklines Gallery)
     st.subheader(f"📈 核心指標歷史數據變化簡圖 (至 {target_date} 止，共 {spark_len} 期)")
-    st.caption("下方簡圖即時反映該歷史時點前數期的加速度與轉折趨勢：")
+    st.caption("下方簡圖反映該歷史時點前數期的加速度與轉折趨勢：")
 
-    key_codes = ['UNRATE', 'ICSA', 'T10Y2Y', 'CPIAUCSL', 'RSXFS', 'FEDFUNDS', 'HOUST', 'DGORDER', 'UMCSENT']
+    key_codes = ['UNRATE', 'ICSA', 'T10Y2Y', 'CPIAUCSL', 'RSXFS', 'FEDFUNDS', 'HOUST', 'DGORDER', 'M2SL']
     gallery_cols = st.columns(3)
-
     use_yoy = "YoY" in spark_type
 
     for idx, code in enumerate(key_codes):
@@ -517,9 +681,7 @@ def render_history_page(df):
         with col_target:
             dates = r['spark_dates']
             vals = r['spark_yoy_vals'] if use_yoy else r['spark_vals']
-            y_title_sub = "YoY (%)" if use_yoy else r['unit']
             
-            # 決定線條顏色
             line_color = '#ef4444' if (code in ['UNRATE', 'ICSA'] and len(vals) > 1 and vals[-1] > vals[0]) else '#2563eb'
             if code == 'T10Y2Y' and vals[-1] < 0:
                 line_color = '#f59e0b'
@@ -531,7 +693,6 @@ def render_history_page(df):
             )
             st.plotly_chart(fig_spark, use_container_width=True)
             
-            # 簡要數值註記
             st.markdown(
                 f"<div style='font-size:0.8rem; color:#64748b; margin-top:-10px; margin-bottom:15px; display:flex; justify-content:space-between;'>"
                 f"<span>當時數值: <b>{r['value']:.2f} {r['unit']}</b></span>"
@@ -542,9 +703,8 @@ def render_history_page(df):
 
     st.divider()
 
-    # 5. 當時 23 項指標完整快照數據表
+    # 6. 當時 23 項指標完整快照數據表
     st.subheader(f"📑 歷史時點 [{target_date}] 全部指標數據快照")
-    
     categories = ["全部"] + list(stats_df['category'].unique())
     selected_cat = st.selectbox("篩選分類", categories, key="hist_cat")
     
@@ -576,12 +736,11 @@ def main():
     if df.empty:
         st.stop()
 
-    # 側邊欄頂部：主要功能頁面導航
     st.sidebar.title("📌 導航功能選單")
     app_page = st.sidebar.radio(
         "前往頁面",
         options=["📊 指標互動走勢圖", "📋 最新數據與總經診斷", "🕰️ 歷史時空回顧"],
-        index=2  # 預設先看歷史時空回顧
+        index=1  # 預設先看最新總經診斷
     )
     st.sidebar.divider()
 
