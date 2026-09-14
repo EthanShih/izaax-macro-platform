@@ -231,40 +231,51 @@ def build_gemini_prompt(snapshot):
 """
     return prompt
 
+LAST_API_ERROR = ""
+
 def call_gemini_api(prompt, api_key):
-    """透過官方 REST API 呼叫 Gemini 1.5 Flash"""
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    """透過官方 REST API 呼叫 Gemini 模型 (依序支援 1.5-flash / 2.0-flash / 2.5-flash)"""
+    global LAST_API_ERROR
+    models_to_try = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-2.5-flash"]
     
-    payload = {
-        "contents": [{
-            "parts": [{"text": prompt}]
-        }],
-        "generationConfig": {
-            "responseMimeType": "application/json",
-            "temperature": 0.2
+    for model_name in models_to_try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
+        payload = {
+            "contents": [{
+                "parts": [{"text": prompt}]
+            }],
+            "generationConfig": {
+                "responseMimeType": "application/json",
+                "temperature": 0.2
+            }
         }
-    }
 
-    req = urllib.request.Request(
-        url,
-        data=json.dumps(payload).encode('utf-8'),
-        headers={'Content-Type': 'application/json'},
-        method='POST'
-    )
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode('utf-8'),
+            headers={'Content-Type': 'application/json'},
+            method='POST'
+        )
 
-    try:
-        with urllib.request.urlopen(req, timeout=45) as response:
-            res_data = response.read().decode('utf-8')
-            res_json = json.loads(res_data)
-            candidate_text = res_json['candidates'][0]['content']['parts'][0]['text']
-            return json.loads(candidate_text)
-    except urllib.error.HTTPError as e:
-        error_body = e.read().decode('utf-8')
-        print(f"Gemini API 呼叫失敗 (HTTP {e.code}): {error_body}")
-        return None
-    except Exception as e:
-        print(f"Gemini API 發生未預期錯誤: {e}")
-        return None
+        try:
+            with urllib.request.urlopen(req, timeout=45) as response:
+                res_data = response.read().decode('utf-8')
+                res_json = json.loads(res_data)
+                candidate_text = res_json['candidates'][0]['content']['parts'][0]['text'].strip()
+                # 去除可能的 markdown json 區塊標籤
+                clean_text = re.sub(r"^```(?:json)?\s*", "", candidate_text, flags=re.IGNORECASE)
+                clean_text = re.sub(r"\s*```$", "", clean_text).strip()
+                parsed = json.loads(clean_text)
+                return parsed, model_name
+        except urllib.error.HTTPError as e:
+            err_body = e.read().decode('utf-8', errors='ignore')
+            LAST_API_ERROR = f"HTTP {e.code} on {model_name}: {err_body[:250]}"
+            print(f"Gemini API 呼叫失敗 ({LAST_API_ERROR})")
+        except Exception as e:
+            LAST_API_ERROR = f"Exception on {model_name}: {str(e)}"
+            print(f"Gemini API 發生未預期錯誤: {LAST_API_ERROR}")
+
+    return None, None
 
 def fallback_rule_diagnosis(snapshot):
     """當未配置 API Key 或 API 異常時，使用內建確定性規則庫作為保底備援"""
@@ -441,22 +452,30 @@ def run_gemini_macro_agent():
     result = None
     engine_name = ""
 
+    debug_info = ""
     if api_key:
-        print("檢測到 GEMINI_API_KEY，正在呼叫 Google Gemini 1.5 Flash 進行全面總經深度推論...")
+        print(f"檢測到 GEMINI_API_KEY (長度 {len(api_key)})，正在呼叫 Google Gemini 進行全面總經深度推論...")
         prompt = build_gemini_prompt(snapshot)
-        ai_res = call_gemini_api(prompt, api_key)
+        ai_res, used_model = call_gemini_api(prompt, api_key)
         if ai_res:
             result = ai_res
-            engine_name = "Google Gemini AI (Auto Generated)"
-            print("Gemini AI 總經深度診斷報告生成成功！")
+            engine_name = f"Gemini ({used_model}) (AI 實時生成)"
+            print(f"Gemini AI ({used_model}) 總經深度診斷報告生成成功！")
+        else:
+            debug_info = f"GEMINI_API_KEY 已配置 (長度 {len(api_key)})，但 API 調用失敗: {LAST_API_ERROR}"
+            print(f"Gemini API 調用未果: {debug_info}")
+    else:
+        debug_info = "GitHub Actions / 本地環境未檢測到 GEMINI_API_KEY (變數為空)"
+        print("未配置 GEMINI_API_KEY，啟用總經架構確定性演算法產製報告...")
 
     if not result:
-        print("未配置 GEMINI_API_KEY 或 API 連線異常，啟用總經架構確定性演算法產製報告...")
         result = fallback_rule_diagnosis(snapshot)
         engine_name = "總經分析規則引擎 (保底備援模式)"
 
     result['generated_at'] = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     result['engine'] = engine_name
+    if debug_info:
+        result['debug_info'] = debug_info
 
     # 1. 保存獨立 JSON
     with open(DIAGNOSIS_JSON_PATH, "w", encoding="utf-8") as f:

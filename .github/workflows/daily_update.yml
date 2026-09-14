@@ -29,8 +29,14 @@ jobs:
 
       - name: Run Update & Build Static Data & Gemini Diagnosis
         env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY || secrets.gemini_api_key }}
         run: |
+          echo "Checking GEMINI_API_KEY secret presence..."
+          if [ -n "$GEMINI_API_KEY" ]; then
+            echo "GEMINI_API_KEY is detected in environment! Length: ${#GEMINI_API_KEY}"
+          else
+            echo "WARNING: GEMINI_API_KEY is EMPTY. Please check GitHub Repository Secrets."
+          fi
           python update_and_build.py
 
       - name: Commit and Push if Changed
