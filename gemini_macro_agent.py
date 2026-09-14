@@ -234,9 +234,9 @@ def build_gemini_prompt(snapshot):
 LAST_API_ERROR = ""
 
 def call_gemini_api(prompt, api_key):
-    """透過官方 REST API 呼叫 Gemini 模型 (依序支援 1.5-flash / 2.0-flash / 2.5-flash)"""
+    """透過官方 REST API 呼叫 Gemini 模型 (依序支援 gemini-3.6-flash / gemini-flash-latest / gemini-2.5-pro 等)"""
     global LAST_API_ERROR
-    models_to_try = ["gemini-1.5-flash", "gemini-2.0-flash", "gemini-2.5-flash"]
+    models_to_try = ["gemini-3.6-flash", "gemini-flash-latest", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-1.5-flash"]
     
     for model_name in models_to_try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
