@@ -4,6 +4,7 @@ import sqlite3
 import datetime
 import urllib.request
 import urllib.error
+import re
 import pandas as pd
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -467,12 +468,15 @@ def run_gemini_macro_agent():
         with open(DATA_JS_PATH, "r", encoding="utf-8") as f:
             content = f.read()
         
-        # 移除既有的 AI_DIAGNOSIS 變數
-        lines = [line for line in content.splitlines() if not line.startswith("const AI_DIAGNOSIS =")]
-        lines.append(f"const AI_DIAGNOSIS = {json.dumps(result, ensure_ascii=False)};")
+        # 使用正規表達式安全替換或追加 var AI_DIAGNOSIS = ...;
+        new_diag_stmt = f"var AI_DIAGNOSIS = {json.dumps(result, ensure_ascii=False)};"
+        if re.search(r"(?:const|var)\s+AI_DIAGNOSIS\s*=.*?;", content, re.DOTALL):
+            content = re.sub(r"(?:const|var)\s+AI_DIAGNOSIS\s*=.*?;", new_diag_stmt, content, count=1, flags=re.DOTALL)
+        else:
+            content = content.rstrip() + "\n" + new_diag_stmt + "\n"
         
         with open(DATA_JS_PATH, "w", encoding="utf-8") as f:
-            f.write("\n".join(lines) + "\n")
+            f.write(content)
         print(f"已成功同步注入 AI 診斷結果至 {DATA_JS_PATH}")
 
     return result

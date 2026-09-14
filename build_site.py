@@ -88,18 +88,18 @@ for code, meta in INDICATOR_METADATA.items():
 data_js_path = os.path.join(DOCS_DIR, "data.js")
 diag_json_path = os.path.join(DOCS_DIR, "diagnosis_result.json")
 
-ai_diag_str = "{}"
+ai_diag_obj = {}
 if os.path.exists(diag_json_path):
     try:
         with open(diag_json_path, "r", encoding="utf-8") as f:
-            ai_diag_str = f.read().strip()
+            ai_diag_obj = json.load(f)
     except Exception as e:
         print(f"讀取 diagnosis_result.json 失敗: {e}")
 
 with open(data_js_path, "w", encoding="utf-8") as f:
     f.write("// 自動生成的總經數據資料庫\n")
-    f.write("const MACRO_DATA = " + json.dumps(timeseries_dict, ensure_ascii=False) + ";\n")
-    f.write("const LATEST_SUMMARY = " + json.dumps(summary_list, ensure_ascii=False) + ";\n")
-    f.write("const AI_DIAGNOSIS = " + ai_diag_str + ";\n")
+    f.write("var MACRO_DATA = " + json.dumps(timeseries_dict, ensure_ascii=False) + ";\n")
+    f.write("var LATEST_SUMMARY = " + json.dumps(summary_list, ensure_ascii=False) + ";\n")
+    f.write("var AI_DIAGNOSIS = " + json.dumps(ai_diag_obj, ensure_ascii=False) + ";\n")
 
 print(f"成功生成 {data_js_path}")
