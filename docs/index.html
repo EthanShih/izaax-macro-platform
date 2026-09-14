@@ -79,19 +79,22 @@
         <div id="tab-diagnosis" class="space-y-6">
             
             <!-- 循環定位橫幅 -->
-            <div class="bg-white border-l-8 border-orange-500 rounded-xl p-5 sm:p-6 card-shadow border border-slate-200">
+            <div id="diag-cycle-banner" class="bg-white border-l-8 border-orange-500 rounded-xl p-5 sm:p-6 card-shadow border border-slate-200">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3 mb-3">
                     <div class="flex items-center gap-2">
-                        <span class="w-3 h-3 rounded-full bg-orange-500 animate-ping"></span>
-                        <h2 class="text-lg sm:text-xl font-bold text-orange-950">
+                        <span id="diag-cycle-ping" class="w-3 h-3 rounded-full bg-orange-500 animate-ping"></span>
+                        <h2 id="diag-cycle-title" class="text-lg sm:text-xl font-bold text-orange-950">
                             📍 當前循環定位：榮景期尾聲 ➔ 成長再平衡 / 降息過渡期 (Late Boom / Transition)
                         </h2>
                     </div>
-                    <span class="text-xs font-semibold px-2.5 py-1 bg-orange-50 text-orange-800 rounded-full border border-orange-200">
-                        四階段模型實時判定
-                    </span>
+                    <div class="flex items-center gap-2">
+                        <span id="diag-engine-badge" class="text-xs font-semibold px-2.5 py-1 bg-orange-50 text-orange-800 rounded-full border border-orange-200">
+                            四階段模型實時判定
+                        </span>
+                        <span id="diag-timestamp-badge" class="text-xs text-slate-500 font-mono hidden sm:inline"></span>
+                    </div>
                 </div>
-                <p class="text-sm sm:text-base text-slate-700 leading-relaxed">
+                <p id="diag-cycle-desc" class="text-sm sm:text-base text-slate-700 leading-relaxed">
                     <strong>【核心判定依據】</strong> 美國長短公債殖利率利差（10Y-2Y 正斜率 +0.33%、10Y-3M +0.89%）已正式結束長達兩年的深度倒掛。每週初領失業金持續處於 20.6 萬人健康低檔，失業率 4.1% 溫和，顯示實體經濟並未爆發斷崖式衰退，升息週期已正式邁向預防性降息窗口。
                 </p>
             </div>
@@ -107,10 +110,10 @@
                     </p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-2xl sm:text-3xl font-bold text-slate-900">4.1%</span>
-                        <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">健康韌性</span>
+                        <span id="diag-stat-labor-status" class="text-xs font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">健康韌性</span>
                     </div>
                     <p class="text-xs text-slate-500 mt-2">
-                        <a href="https://fred.stlouisfed.org/series/ICSA" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline">初領救濟金 206K (未破250K警戒) ↗</a>
+                        <a id="diag-stat-labor-sub" href="https://fred.stlouisfed.org/series/ICSA" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline">初領救濟金 206K (未破250K警戒) ↗</a>
                     </p>
                 </div>
 
@@ -123,10 +126,10 @@
                     </p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-2xl sm:text-3xl font-bold text-slate-900">3.35%</span>
-                        <span class="text-xs font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">受控降溫</span>
+                        <span id="diag-stat-inf-status" class="text-xs font-medium text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">受控降溫</span>
                     </div>
                     <p class="text-xs text-slate-500 mt-2">
-                        <a href="https://fred.stlouisfed.org/series/PCEPILFE" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline">核心 PCE 3.34% 穩定收斂 ↗</a>
+                        <a id="diag-stat-inf-sub" href="https://fred.stlouisfed.org/series/PCEPILFE" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline">核心 PCE 3.34% 穩定收斂 ↗</a>
                     </p>
                 </div>
 
@@ -139,10 +142,10 @@
                     </p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-2xl sm:text-3xl font-bold text-emerald-600">+0.33%</span>
-                        <span class="text-xs font-medium text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded font-bold">已解倒掛</span>
+                        <span id="diag-stat-yield-status" class="text-xs font-medium text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded font-bold">已解倒掛</span>
                     </div>
                     <p class="text-xs text-slate-500 mt-2">
-                        <a href="https://fred.stlouisfed.org/series/T10Y3M" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline">10Y-3M 同步回升至 +0.89% ↗</a>
+                        <a id="diag-stat-yield-sub" href="https://fred.stlouisfed.org/series/T10Y3M" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline">10Y-3M 同步回升至 +0.89% ↗</a>
                     </p>
                 </div>
 
@@ -155,10 +158,10 @@
                     </p>
                     <div class="flex items-baseline gap-2 mt-1">
                         <span class="text-2xl sm:text-3xl font-bold text-slate-900">+5.01%</span>
-                        <span class="text-xs font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">強韌增長</span>
+                        <span id="diag-stat-cons-status" class="text-xs font-medium text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded">強韌增長</span>
                     </div>
                     <p class="text-xs text-slate-500 mt-2">
-                        <a href="https://fred.stlouisfed.org/series/DGORDER" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline">耐久財訂單 YoY +12.0% 擴張 ↗</a>
+                        <a id="diag-stat-cons-sub" href="https://fred.stlouisfed.org/series/DGORDER" target="_blank" rel="noopener noreferrer" class="hover:text-blue-600 hover:underline">耐久財訂單 YoY +12.0% 擴張 ↗</a>
                     </p>
                 </div>
             </div>
@@ -172,7 +175,7 @@
                     <p class="text-xs text-slate-500">跳脫單一指標雜訊，從勞動、通膨、消費、房市、流動性五大鏈條進行嚴謹交叉驗證：</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="diag-cross-validation-container">
                     <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
                         <div class="flex items-center justify-between">
                             <span class="text-sm font-bold text-slate-900">👥 勞動市場供需交叉比對</span>
@@ -239,7 +242,7 @@
                     <p class="text-xs text-slate-500">根據當前 23 項指標權重推演未來 6~18 個月最可能發生的宏觀情境：</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="diag-scenarios-container">
                     <!-- 情境 A -->
                     <div class="p-5 rounded-xl border-2 border-emerald-300 bg-emerald-50/50 flex flex-col justify-between space-y-3">
                         <div>
@@ -310,7 +313,7 @@
                                 <th class="py-3 px-4">宏觀意涵與操作應對邏輯</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-200 text-xs sm:text-sm">
+                        <tbody id="diag-watchlist-tbody" class="divide-y divide-slate-200 text-xs sm:text-sm">
                             <tr class="hover:bg-slate-50">
                                 <td class="py-3 px-4 font-bold text-slate-900">
                                     <a href="https://fred.stlouisfed.org/series/ICSA" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline inline-flex items-center gap-1 group">
@@ -383,7 +386,7 @@
                     <h3 class="text-base font-bold text-amber-900 flex items-center gap-2">
                         <span>⚠️</span> 核心風險提示 (Risk Warning)
                     </h3>
-                    <ul class="text-xs sm:text-sm text-amber-950 space-y-2 list-disc list-inside leading-relaxed">
+                    <ul id="diag-risk-warnings" class="text-xs sm:text-sm text-amber-950 space-y-2 list-disc list-inside leading-relaxed">
                         <li><strong>解除倒掛後的時滯衰退陷阱</strong>：歷史經驗表明，經濟下行通常不在倒掛期間，而在倒掛解除後 6~18 個月內驗證。若初領失業金急升至 25 萬以上，需提高警覺。</li>
                         <li><strong>長端利率高懸 (10Y 殖利率接近 4.95%)</strong>：無風險基準利率居高不下，房貸利率緊繃壓抑房市開工與成屋交易，並制約股票估值倍數。</li>
                         <li><strong>低收入群體消費邊際放緩</strong>：密大消費者信心指數 (55.2) 低迷，需關注終端零售是否因超額儲蓄見底而走弱。</li>
@@ -394,7 +397,7 @@
                     <h3 class="text-base font-bold text-blue-900 flex items-center gap-2">
                         <span>💡</span> 資產配置與投資策略建議
                     </h3>
-                    <div class="space-y-2 text-xs sm:text-sm text-blue-950 leading-relaxed">
+                    <div id="diag-asset-allocation" class="space-y-2 text-xs sm:text-sm text-blue-950 leading-relaxed">
                         <div class="font-bold text-blue-800">
                             🛡️ 建議資產比例：股票 60% ｜ 長天期美債 35% ｜ 現金 5%
                         </div>
@@ -627,6 +630,184 @@
         let selectedCompareCodes = ['UNRATE'];
         let cachedHistSummary = [];
 
+        // ==================== Gemini AI / 總經診斷動態渲染 ====================
+        function renderAiDiagnosis() {
+            if (typeof AI_DIAGNOSIS === 'undefined' || !AI_DIAGNOSIS) return;
+            const diag = AI_DIAGNOSIS;
+
+            // 1. 循環定位橫幅
+            const banner = document.getElementById('diag-cycle-banner');
+            const ping = document.getElementById('diag-cycle-ping');
+            const title = document.getElementById('diag-cycle-title');
+            const desc = document.getElementById('diag-cycle-desc');
+            const engineBadge = document.getElementById('diag-engine-badge');
+            const tsBadge = document.getElementById('diag-timestamp-badge');
+
+            if (banner && diag.cycle_color) banner.style.borderLeftColor = diag.cycle_color;
+            if (ping && diag.cycle_color) ping.style.backgroundColor = diag.cycle_color;
+            if (title && diag.cycle_title) title.innerText = `📍 當前循環定位：${diag.cycle_title}`;
+            if (desc && diag.cycle_desc) desc.innerHTML = `<strong>【核心判定依據】</strong> ${diag.cycle_desc}`;
+            
+            if (engineBadge) {
+                const isGemini = (diag.engine || '').includes('Gemini');
+                engineBadge.innerText = diag.engine || '四階段模型實時判定';
+                if (isGemini) {
+                    engineBadge.className = "text-xs font-semibold px-2.5 py-1 bg-purple-100 text-purple-800 rounded-full border border-purple-300 font-bold shadow-sm";
+                }
+            }
+            if (tsBadge && diag.generated_at) {
+                tsBadge.innerText = `診斷時間: ${diag.generated_at}`;
+                tsBadge.classList.remove('hidden');
+            }
+
+            // 2. 即時核心體質卡片狀態
+            if (diag.stat_cards) {
+                const sc = diag.stat_cards;
+                if (sc.labor_status) {
+                    const el = document.getElementById('diag-stat-labor-status');
+                    if (el) el.innerText = sc.labor_status;
+                }
+                if (sc.labor_sub) {
+                    const el = document.getElementById('diag-stat-labor-sub');
+                    if (el) el.innerText = `${sc.labor_sub} ↗`;
+                }
+                if (sc.inflation_status) {
+                    const el = document.getElementById('diag-stat-inf-status');
+                    if (el) el.innerText = sc.inflation_status;
+                }
+                if (sc.inflation_sub) {
+                    const el = document.getElementById('diag-stat-inf-sub');
+                    if (el) el.innerText = `${sc.inflation_sub} ↗`;
+                }
+                if (sc.yield_status) {
+                    const el = document.getElementById('diag-stat-yield-status');
+                    if (el) el.innerText = sc.yield_status;
+                }
+                if (sc.yield_sub) {
+                    const el = document.getElementById('diag-stat-yield-sub');
+                    if (el) el.innerText = `${sc.yield_sub} ↗`;
+                }
+                if (sc.consumption_status) {
+                    const el = document.getElementById('diag-stat-cons-status');
+                    if (el) el.innerText = sc.consumption_status;
+                }
+                if (sc.consumption_sub) {
+                    const el = document.getElementById('diag-stat-cons-sub');
+                    if (el) el.innerText = `${sc.consumption_sub} ↗`;
+                }
+            }
+
+            // 3. 多維度交叉比對分析
+            const crossContainer = document.getElementById('diag-cross-validation-container');
+            if (crossContainer && Array.isArray(diag.cross_validation) && diag.cross_validation.length > 0) {
+                let cvHtml = '';
+                diag.cross_validation.forEach((item, idx) => {
+                    const spanClass = (idx === diag.cross_validation.length - 1 && diag.cross_validation.length % 2 === 1) ? 'md:col-span-2' : '';
+                    let tagColorClass = 'bg-blue-100 text-blue-800';
+                    if (item.status_tag.includes('健康') || item.status_tag.includes('穩健') || item.status_tag.includes('強韌')) {
+                        tagColorClass = 'bg-emerald-100 text-emerald-800';
+                    } else if (item.status_tag.includes('警戒') || item.status_tag.includes('惡化') || item.status_tag.includes('壓抑')) {
+                        tagColorClass = 'bg-rose-100 text-rose-800';
+                    } else if (item.status_tag.includes('築底') || item.status_tag.includes('鈍化') || item.status_tag.includes('震盪')) {
+                        tagColorClass = 'bg-amber-100 text-amber-800';
+                    }
+                    cvHtml += `
+                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2 ${spanClass}">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-bold text-slate-900">${item.dimension}</span>
+                                <span class="text-xs px-2 py-0.5 rounded ${tagColorClass} font-semibold">${item.status_tag}</span>
+                            </div>
+                            <p class="text-xs text-slate-600"><strong>比對指標</strong>：${item.indicators}</p>
+                            <p class="text-xs text-slate-700 leading-relaxed">
+                                <strong>實證推論</strong>：${item.insight}
+                            </p>
+                        </div>
+                    `;
+                });
+                crossContainer.innerHTML = cvHtml;
+            }
+
+            // 4. 三大情境推論
+            const scenContainer = document.getElementById('diag-scenarios-container');
+            if (scenContainer && Array.isArray(diag.forward_scenarios) && diag.forward_scenarios.length > 0) {
+                let scenHtml = '';
+                const defaultThemes = [
+                    { border: 'border-emerald-300', bg: 'bg-emerald-50/50', badgeBg: 'bg-emerald-200', textBadge: 'text-emerald-900', textTitle: 'text-emerald-950', borderSep: 'border-emerald-200', textAsset: 'text-emerald-900' },
+                    { border: 'border-rose-300', bg: 'bg-rose-50/50', badgeBg: 'bg-rose-200', textBadge: 'text-rose-900', textTitle: 'text-rose-950', borderSep: 'border-rose-200', textAsset: 'text-rose-900' },
+                    { border: 'border-amber-300', bg: 'bg-amber-50/50', badgeBg: 'bg-amber-200', textBadge: 'text-amber-900', textTitle: 'text-amber-950', borderSep: 'border-amber-200', textAsset: 'text-amber-900' }
+                ];
+
+                diag.forward_scenarios.forEach((scen, idx) => {
+                    const theme = defaultThemes[idx % defaultThemes.length];
+                    scenHtml += `
+                        <div class="p-5 rounded-xl border-2 ${theme.border} ${theme.bg} flex flex-col justify-between space-y-3">
+                            <div>
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-sm ${theme.textTitle}">${scen.name}</span>
+                                    <span class="text-xs px-2 py-0.5 rounded-full ${theme.badgeBg} ${theme.textBadge} font-bold">發生機率 ${scen.prob}</span>
+                                </div>
+                                <p class="text-xs text-slate-700 mt-2 leading-relaxed">
+                                    <strong>【演變路徑】</strong> ${scen.path}
+                                </p>
+                            </div>
+                            <div class="pt-3 border-t ${theme.borderSep} text-xs ${theme.textAsset} leading-relaxed">
+                                <strong>【最佳資產反應】</strong> ${scen.asset}
+                            </div>
+                        </div>
+                    `;
+                });
+                scenContainer.innerHTML = scenHtml;
+            }
+
+            // 5. 觀察指標與門檻清單
+            const watchTbody = document.getElementById('diag-watchlist-tbody');
+            if (watchTbody && Array.isArray(diag.watchlist_triggers) && diag.watchlist_triggers.length > 0) {
+                let tbHtml = '';
+                diag.watchlist_triggers.forEach(item => {
+                    const fredUrl = item.code ? `https://fred.stlouisfed.org/series/${item.code}` : '#';
+                    tbHtml += `
+                        <tr class="hover:bg-slate-50">
+                            <td class="py-3 px-4 font-bold text-slate-900">
+                                <a href="${fredUrl}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline inline-flex items-center gap-1 group">
+                                    <span>${item.indicator}</span>
+                                    <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600 inline shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                </a>
+                            </td>
+                            <td class="py-3 px-4 text-slate-500">${item.freq}</td>
+                            <td class="py-3 px-4 text-center font-bold text-blue-600">${item.current}</td>
+                            <td class="py-3 px-4 text-center font-bold text-rose-600 bg-rose-50/50">${item.trigger}</td>
+                            <td class="py-3 px-4 text-slate-600">${item.meaning}</td>
+                        </tr>
+                    `;
+                });
+                watchTbody.innerHTML = tbHtml;
+            }
+
+            // 6. 核心風險提示
+            const riskUl = document.getElementById('diag-risk-warnings');
+            if (riskUl && Array.isArray(diag.risk_warnings) && diag.risk_warnings.length > 0) {
+                let riskHtml = '';
+                diag.risk_warnings.forEach(r => {
+                    riskHtml += `<li>${r}</li>`;
+                });
+                riskUl.innerHTML = riskHtml;
+            }
+
+            // 7. 資產配置建議
+            const allocDiv = document.getElementById('diag-asset-allocation');
+            if (allocDiv && diag.asset_allocation) {
+                const alloc = diag.asset_allocation;
+                allocDiv.innerHTML = `
+                    <div class="font-bold text-blue-800">
+                        🛡️ 建議資產比例：${alloc.ratio}
+                    </div>
+                    <p><strong>• 債券端策略</strong>：${alloc.bond_strategy}</p>
+                    <p><strong>• 股票端策略</strong>：${alloc.equity_strategy}</p>
+                    <p><strong>• 風控關鍵底線</strong>：${alloc.risk_control}</p>
+                `;
+            }
+        }
+
         function switchTab(tab) {
             const histTab = document.getElementById('tab-history');
             const diagTab = document.getElementById('tab-diagnosis');
@@ -649,6 +830,7 @@
             if (tab === 'diagnosis') {
                 diagTab.classList.remove('hidden');
                 diagBtn.className = actClass;
+                renderAiDiagnosis();
                 renderSummaryTable('全部');
             } else if (tab === 'history') {
                 histTab.classList.remove('hidden');
@@ -1317,6 +1499,7 @@
 
         window.onload = () => {
             initFontSize();
+            renderAiDiagnosis();
             renderSummaryTable('全部');
             initChartControls();
         };
