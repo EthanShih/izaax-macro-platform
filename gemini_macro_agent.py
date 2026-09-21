@@ -238,7 +238,13 @@ LAST_API_ERROR = ""
 def call_gemini_api(prompt, api_key):
     """透過官方 REST API 呼叫 Gemini 模型 (依序支援 gemini-3.6-flash / gemini-flash-latest / gemini-2.5-pro 等)"""
     global LAST_API_ERROR
-    models_to_try = ["gemini-3.6-flash", "gemini-flash-latest", "gemini-2.5-pro", "gemini-2.5-flash", "gemini-1.5-flash"]
+    models_to_try = [
+        "gemini-flash-lite-latest",
+        "gemini-3.6-flash",
+        "gemini-3.1-pro-preview",
+        "gemini-pro-latest",
+        "gemini-flash-latest"
+    ]
     
     for model_name in models_to_try:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={api_key}"
@@ -450,7 +456,7 @@ def run_gemini_macro_agent():
     print(f"[{datetime.datetime.now()}] 啟動 Gemini AI 總經診斷代理程式...")
     snapshot = get_latest_macro_snapshot()
     
-    api_key = os.environ.get("GEMINI_API_KEY", "").strip()
+    api_key = os.environ.get("GEMINI_API_KEY", "AIzaSyD_qc02eWGO5N5JcmRkL2QE56K4PTbjOIQ").strip()
     result = None
     engine_name = ""
 
