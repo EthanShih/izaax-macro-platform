@@ -531,7 +531,18 @@ def render_diagnosis_page(df):
     st.caption("設定明確客觀的數據閥值，作為整體策略與資產配置動態調整的觸發信號：")
     
     watch_df = pd.DataFrame(diag['watchlist_triggers'])
-    watch_df.columns = ["追蹤指標", "發布頻率", "當前數值", "關鍵警戒門檻 (Trigger)", "宏觀意涵與應對邏輯"]
+    col_map = {
+        'indicator': '追蹤指標',
+        'code': '代碼',
+        'freq': '發布頻率',
+        'current': '當前數值',
+        'trigger': '關鍵警戒門檻 (Trigger)',
+        'meaning': '宏觀意涵與應對邏輯'
+    }
+    watch_df = watch_df.rename(columns=col_map)
+    ordered_cols = [c for c in ["追蹤指標", "代碼", "發布頻率", "當前數值", "關鍵警戒門檻 (Trigger)", "宏觀意涵與應對邏輯"] if c in watch_df.columns]
+    if ordered_cols:
+        watch_df = watch_df[ordered_cols]
     st.dataframe(watch_df, use_container_width=True, hide_index=True)
 
     st.divider()
