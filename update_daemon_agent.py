@@ -23,11 +23,13 @@ INDICATORS = {
     'PERMIT': '建築許可',
     'HSN1F': '新屋銷售',
     'EXHOSLUSM495S': '成屋銷售',
-    'FEDFUNDS': '聯邦基金利率',
+    'FEDFUNDS': '聯邦資金利率',
     'DGS10': '10年期公債殖利率',
     'T10Y2Y': '10年減2年期公債殖利率差',
     'T10Y3M': '10年減3個月期公債殖利率差',
-    'GDP': '國內生產毛額(GDP)',
+    'GDP': '名目GDP (BEA)',
+    'GDPC1': '實質GDP (BEA)',
+    'A191RL1Q225SBEA': '實質GDP季增年率 (BEA)',
     'M2SL': 'M2貨幣供給'
 }
 

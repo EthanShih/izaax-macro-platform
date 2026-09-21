@@ -120,7 +120,7 @@
       "meaning": "金融流動性活水。M2 保持 5% 以上擴張將持續為市場注入評價支撐，降低流動性枯竭風險。"
     }
   ],
-  "generated_at": "2026-09-21 06:00:54",
+  "generated_at": "2026-09-21 14:31:13",
   "engine": "總經分析規則引擎 (保底備援模式)",
-  "debug_info": "GEMINI_API_KEY 已配置 (長度 39)，但 API 調用失敗: HTTP 404 on gemini-1.5-flash: {\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"models/gemini-1.5-flash is not found for API version v1beta, or is not supported for generateContent. Call ModelService.ListModels to see the list of available models and their supported methods.\",\n    "
+  "debug_info": "GitHub Actions / 本地環境未檢測到 GEMINI_API_KEY (變數為空)"
 }
