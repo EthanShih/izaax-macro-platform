@@ -1,14 +1,14 @@
 {
   "cycle_title": "榮景期尾聲 ➔ 成長再平衡 / 降息過渡期 (Late Boom / Transition)",
   "cycle_color": "#f97316",
-  "cycle_desc": "長短公債利差已正式脫離長達兩年的深度倒掛、恢復正斜率 (+0.25%)。初領救濟金維持在 196K 人之健康低檔，失業率 4.1% 溫和，升息週期已正式邁向預防性降息窗口。",
+  "cycle_desc": "長短公債利差已正式脫離長達兩年的深度倒掛、恢復正斜率 (+0.26%)。初領救濟金維持在 196K 人之健康低檔，失業率 4.1% 溫和，升息週期已正式邁向預防性降息窗口。",
   "stat_cards": {
     "labor_status": "健康韌性",
     "labor_sub": "初領救濟金 196K (未破250K警戒)",
     "inflation_status": "受控降溫",
     "inflation_sub": "核心 PCE 3.34% 穩定收斂",
     "yield_status": "已解倒掛",
-    "yield_sub": "10Y-2Y 正斜率 +0.25%",
+    "yield_sub": "10Y-2Y 正斜率 +0.26%",
     "consumption_status": "強韌增長",
     "consumption_sub": "耐久財訂單 YoY +12.0% 擴張"
   },
@@ -40,7 +40,7 @@
     {
       "dimension": "💧 貨幣流動性 vs 實體利差結構",
       "status_tag": "牛陡重啟",
-      "indicators": "10Y-2Y 利差 +0.25% ｜ M2 貨幣供給 YoY +5.66%",
+      "indicators": "10Y-2Y 利差 +0.26% ｜ M2 貨幣供給 YoY +5.66%",
       "insight": "長短天期公債利差正式脫離深度倒掛，M2 年增率重回擴張區間，整體流動性保持充沛，降低了信用風險溢酬攀升與流動性枯竭風險。"
     }
   ],
@@ -120,7 +120,7 @@
       "meaning": "金融流動性活水。M2 保持 5% 以上擴張將持續為市場注入評價支撐，降低流動性枯竭風險。"
     }
   ],
-  "generated_at": "2026-09-23 05:41:14",
+  "generated_at": "2026-09-24 05:57:25",
   "engine": "總經分析規則引擎 (保底備援模式)",
   "debug_info": "GEMINI_API_KEY 已配置 (長度 39)，但 API 調用失敗: HTTP 403 on gemini-flash-latest: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Your API key was reported as leaked. Please use another API key.\",\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n"
 }
