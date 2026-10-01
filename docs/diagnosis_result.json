@@ -1,14 +1,14 @@
 {
   "cycle_title": "榮景期尾聲 ➔ 成長再平衡 / 降息過渡期 (Late Boom / Transition)",
   "cycle_color": "#f97316",
-  "cycle_desc": "長短公債利差已正式脫離長達兩年的深度倒掛、恢復正斜率 (+0.37%)。初領救濟金維持在 197K 人之健康低檔，失業率 4.1% 溫和，升息週期已正式邁向預防性降息窗口。",
+  "cycle_desc": "長短公債利差已正式脫離長達兩年的深度倒掛、恢復正斜率 (+0.41%)。初領救濟金維持在 197K 人之健康低檔，失業率 4.1% 溫和，升息週期已正式邁向預防性降息窗口。",
   "stat_cards": {
     "labor_status": "健康韌性",
     "labor_sub": "初領救濟金 197K (未破250K警戒)",
     "inflation_status": "受控降溫",
-    "inflation_sub": "核心 PCE 3.34% 穩定收斂",
+    "inflation_sub": "核心 PCE 2.95% 穩定收斂",
     "yield_status": "已解倒掛",
-    "yield_sub": "10Y-2Y 正斜率 +0.37%",
+    "yield_sub": "10Y-2Y 正斜率 +0.41%",
     "consumption_status": "強韌增長",
     "consumption_sub": "耐久財訂單 YoY +8.5% 擴張"
   },
@@ -22,7 +22,7 @@
     {
       "dimension": "🔥 通膨傳導鏈條交叉驗證",
       "status_tag": "平穩收斂",
-      "indicators": "CPI YoY +3.35% ➔ 核心 PCE +3.34%",
+      "indicators": "CPI YoY +3.35% ➔ 核心 PCE +2.95%",
       "insight": "核心 PCE 與 CPI 均自高點顯著收斂，生產者物價 PPI 雖偶有波動，但尚未向上傳導至下游消費品。服務業工資增長放緩有效壓制了核心通膨黏性。"
     },
     {
@@ -40,7 +40,7 @@
     {
       "dimension": "💧 貨幣流動性 vs 實體利差結構",
       "status_tag": "牛陡重啟",
-      "indicators": "10Y-2Y 利差 +0.37% ｜ M2 貨幣供給 YoY +5.66%",
+      "indicators": "10Y-2Y 利差 +0.41% ｜ M2 貨幣供給 YoY +5.66%",
       "insight": "長短天期公債利差正式脫離深度倒掛，M2 年增率重回擴張區間，整體流動性保持充沛，降低了信用風險溢酬攀升與流動性枯竭風險。"
     }
   ],
@@ -91,7 +91,7 @@
       "indicator": "核心 PCE 物價 MoM (PCEPILFE)",
       "code": "PCEPILFE",
       "freq": "每月底",
-      "current": "3.34% (YoY)",
+      "current": "2.95% (YoY)",
       "trigger": "連續 2 個月 MoM > 0.3%",
       "meaning": "Fed 定錨目標。若 MoM 持續高於 0.3% (年化 3.6%)，降息窗口將關閉，股債受折現率壓制。"
     },
@@ -120,7 +120,7 @@
       "meaning": "金融流動性活水。M2 保持 5% 以上擴張將持續為市場注入評價支撐，降低流動性枯竭風險。"
     }
   ],
-  "generated_at": "2026-09-30 06:27:46",
+  "generated_at": "2026-10-01 07:01:11",
   "engine": "總經分析規則引擎 (保底備援模式)",
   "debug_info": "GEMINI_API_KEY 已配置 (長度 39)，但 API 調用失敗: HTTP 403 on gemini-flash-latest: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Your API key was reported as leaked. Please use another API key.\",\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n"
 }
