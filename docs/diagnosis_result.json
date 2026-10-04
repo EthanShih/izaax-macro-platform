@@ -120,7 +120,7 @@
       "meaning": "金融流動性活水。M2 保持 5% 以上擴張將持續為市場注入評價支撐，降低流動性枯竭風險。"
     }
   ],
-  "generated_at": "2026-10-03 06:14:11",
+  "generated_at": "2026-10-04 06:42:30",
   "engine": "總經分析規則引擎 (保底備援模式)",
   "debug_info": "GEMINI_API_KEY 已配置 (長度 39)，但 API 調用失敗: HTTP 403 on gemini-flash-latest: {\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"Your API key was reported as leaked. Please use another API key.\",\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n"
 }
